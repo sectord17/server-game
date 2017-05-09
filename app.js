@@ -1,9 +1,8 @@
-let process = require('process'),
-    express = require('express'),
-    env = require('node-env-file'),
-    raven = require('raven'),
-    path = require('path'),
-    logger = require('morgan');
+const express = require('express');
+const env = require('node-env-file');
+const raven = require('raven');
+const path = require('path');
+const logger = require('morgan');
 
 env(__dirname + '/.env');
 
@@ -12,6 +11,7 @@ if (process.env.SENTRY_DSN) {
 }
 
 const app = express();
+
 app.use(logger('dev'));
 require('./lib')(app);
 

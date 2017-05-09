@@ -2,11 +2,15 @@
   "name": "server-game",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
     "body-parser": "~1.16.0",
     "debug": "~2.6.0",
     "express": "~4.14.1",
     "flatbuffers": "^1.5.0",
+    "mocha": "^3.3.0",
     "moment": "^2.18.1",
     "morgan": "~1.7.0",
     "node-env-file": "^0.1.8",
