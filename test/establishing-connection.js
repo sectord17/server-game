@@ -4,6 +4,7 @@ const dgram = require('dgram');
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
 
 const playerManager = require('../lib/player-manager');
+const gameApp = require('../lib/game');
 
 describe('Establishing connection is that', function () {
     before(require('../test-setup').before);
@@ -13,7 +14,7 @@ describe('Establishing connection is that', function () {
         // given
         const player = playerManager.decide();
         const clientUdp = dgram.createSocket('udp4');
-        const clientTcp = net.connect({port: 8000});
+        const clientTcp = net.connect({port: gameApp.serverTcp.port});
         const name = "Blah";
         let udpPort = null;
         clientUdp.bind(0, () => {
