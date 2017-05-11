@@ -2,3 +2,4 @@
 
 cp .env.example .env
 npm install
+npm test

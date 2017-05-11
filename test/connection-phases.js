@@ -3,10 +3,8 @@ const assert = require('assert');
 const playerManager = require('../lib/player-manager');
 
 describe('Connection to the game phases is that', function () {
-    afterEach(function (done) {
-        playerManager.deleteAll();
-        done();
-    });
+    before(require('../test-setup').before);
+    afterEach(require('../test-setup').afterEach);
 
     it('should decide to connect', function () {
         // given

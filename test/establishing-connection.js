@@ -6,10 +6,8 @@ const FlatBuffersHelper = require('../lib/flatbuffers/helper');
 const playerManager = require('../lib/player-manager');
 
 describe('Establishing connection is that', function () {
-    afterEach(function (done) {
-        playerManager.deleteAll();
-        done();
-    });
+    before(require('../test-setup').before);
+    afterEach(require('../test-setup').afterEach);
 
     it('send login message after getting connected via TCP and UDP', function (done) {
         // given
