@@ -45,7 +45,7 @@ describe('Connection to the game phases is that', function () {
         // given
         const name = "Foo";
         const address = "127.0.0.1";
-        const udpPort = 666;
+        const udpPort = 66666;
         const player = playerManager.decide();
 
         // when

@@ -33,7 +33,7 @@ describe('Establishing connection is that', function () {
             assert.equal(player.isAuthorized(), true);
             assert.equal(player.isConnected(), true);
             assert.equal(player.name, name);
-            // assert.equal(player.communicationHandler.udpPort, udpPort);
+            assert.equal(player.communicationHandler.udpPort, udpPort);
             assert.equal(playerManager.all().length, 1);
             assert.equal(playerManager.allConnected().length, 1);
 
