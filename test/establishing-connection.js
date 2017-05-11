@@ -1,23 +1,26 @@
 const assert = require('assert');
-const app = require('../lib');
-
 const net = require('net');
 const dgram = require('dgram');
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
 
-describe('Establishing connection', function () {
+const playerManager = require('../lib/player-manager');
+
+describe('Establishing connection is that', function () {
     afterEach(function (done) {
-        app.playerManager.deleteAll();
+        playerManager.deleteAll();
         done();
     });
 
-    it('establishes connection with server', function (done) {
+    it('send login message after getting connected via TCP and UDP', function (done) {
         // given
-        const player = app.playerManager.decide();
+        const player = playerManager.decide();
         const clientUdp = dgram.createSocket('udp4');
         const clientTcp = net.connect({port: 8000});
         const name = "Blah";
-        const udpPort = clientUdp.address().port;
+        let udpPort = null;
+        clientUdp.bind(0, () => {
+            udpPort = clientUdp.address().port;
+        });
 
         // when
         clientTcp.on('connect', () => {
@@ -31,12 +34,12 @@ describe('Establishing connection', function () {
             assert.equal(player.isAuthorized(), true);
             assert.equal(player.isConnected(), true);
             assert.equal(player.name, name);
-            assert.equal(player.communicationHandler.udpPort, udpPort);
-            assert.equal(app.playerManager.all().length, 1);
-            assert.equal(app.playerManager.allConnected().length, 1);
+            // assert.equal(player.communicationHandler.udpPort, udpPort);
+            assert.equal(playerManager.all().length, 1);
+            assert.equal(playerManager.allConnected().length, 1);
 
             done();
-        }, 200);
+        }, 50);
     });
 });
 

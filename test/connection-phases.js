@@ -1,55 +1,57 @@
 const assert = require('assert');
-const app = require('../lib');
 
-describe('Connection phases', function () {
+const playerManager = require('../lib/player-manager');
+
+describe('Connection to the game phases is that', function () {
     afterEach(function (done) {
-        app.playerManager.deleteAll();
+        playerManager.deleteAll();
         done();
     });
 
-    it('can decide to connect', function (done) {
+    it('should decide to connect', function () {
         // given
 
         // when
-        const player = app.playerManager.decide();
+        const player = playerManager.decide();
 
         // then
         assert.equal(player.isDecided(), true);
         assert.equal(player.isAuthorized(), false);
         assert.equal(player.isConnected(), false);
-        assert.equal(app.playerManager.all().length, 1);
-        assert.equal(app.playerManager.allConnected().length, 0);
+        assert.equal(playerManager.all().length, 1);
+        assert.equal(playerManager.allConnected().length, 0);
     });
 
-    it('authorizes', function (done) {
+    it('should authorizes', function (done) {
         // given
         const name = "Foo";
-        const player = app.playerManager.decide();
+        const player = playerManager.decide();
 
         // when
-        app.playerManager
+        playerManager
             .authorize(player.token, name)
             .then(player => {
                 // then
                 assert.equal(player.isDecided(), true);
-                assert.equal(player.isAuthorized(), false);
+                assert.equal(player.isAuthorized(), true);
                 assert.equal(player.isConnected(), false);
                 assert.equal(player.name, name);
-                assert.equal(app.playerManager.all().length, 1);
-                assert.equal(app.playerManager.allConnected().length, 0);
+                assert.equal(playerManager.all().length, 1);
+                assert.equal(playerManager.allConnected().length, 0);
                 done();
-            });
+            })
+            .catch(error => done(error));
     });
 
-    it('connects to the server', function (done) {
+    it('should connects to the server', function (done) {
         // given
         const name = "Foo";
         const address = "127.0.0.1";
         const udpPort = 666;
-        const player = app.playerManager.decide();
+        const player = playerManager.decide();
 
         // when
-        app.playerManager
+        playerManager
             .connect(player.token, name, address, udpPort, {
                 close() {
                 }
@@ -62,10 +64,11 @@ describe('Connection phases', function () {
                 assert.equal(player.name, name);
                 assert.equal(player.communicationHandler.address, address);
                 assert.equal(player.communicationHandler.udpPort, udpPort);
-                assert.equal(app.playerManager.all().length, 1);
-                assert.equal(app.playerManager.allConnected().length, 1);
+                assert.equal(playerManager.all().length, 1);
+                assert.equal(playerManager.allConnected().length, 1);
                 done();
-            });
+            })
+            .catch(error => done(error));
     });
 });
 
