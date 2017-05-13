@@ -27,7 +27,10 @@ describe('Connection to the game phases is that', function () {
 
         // when
         playerManager
-            .authorize(player.token, name)
+            .authorize(player.token, name, {
+                close() {
+                }
+            })
             .then(player => {
                 // then
                 assert.equal(player.isDecided(), true);
@@ -50,10 +53,11 @@ describe('Connection to the game phases is that', function () {
 
         // when
         playerManager
-            .connect(player.token, name, address, udpPort, {
+            .authorize(player.token, name, {
                 close() {
                 }
             })
+            .then(player => playerManager.connect(player.token, address, udpPort))
             .then(player => {
                 // then
                 assert.equal(player.isDecided(), true);
