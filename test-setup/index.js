@@ -1,7 +1,8 @@
 const winston = require('winston');
 const net = require('net');
 const dgram = require('dgram');
-const ServerAssets = require('../lib/flatbuffers/ServerSchema_generated').Assets;
+const flatbuffers = require('flatbuffers').flatbuffers;
+const UdpAssets = require('../lib/flatbuffers/UdpSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
 const playerManager = require('../lib/player-manager');
 const gameApp = require('../lib/game');
@@ -25,14 +26,15 @@ module.exports.createPlayer = function (name) {
             const loginMsg = FlatBuffersHelper.loginMsg(name, player.token);
 
             clientTcp.write(loginMsg);
-            clientUdp.send(loginMsg, gameApp.serverUdp.port, gameApp.serverUdp.address);
+
+            setTimeout(() => clientUdp.send(loginMsg, gameApp.serverUdp.port, gameApp.serverUdp.address), 10);
         });
 
         clientTcp.on('data', message => {
             const data = new Uint8Array(message);
             const buf = new flatbuffers.ByteBuffer(data);
 
-            if (!ServerAssets.Code.Remote.LoginAck.bufferHasIdentifier(buf)) {
+            if (!UdpAssets.Code.Remote.Flat.UdpReceived.bufferHasIdentifier(buf)) {
                 reject("Invalid buffer identifier");
             }
 
