@@ -21,13 +21,18 @@ module.exports.createPlayer = function (name) {
         const player = playerManager.decide();
         const clientUdp = dgram.createSocket('udp4');
         const clientTcp = net.connect({port: gameApp.serverTcp.port});
+        let sendLoginMsgCiaUdpTask = null;
 
         clientTcp.on('connect', () => {
             const loginMsg = FlatBuffersHelper.loginMsg(name, player.token);
 
             clientTcp.write(loginMsg);
 
-            setTimeout(() => clientUdp.send(loginMsg, gameApp.serverUdp.port, gameApp.serverUdp.address), 10);
+            const sendLoginMsgViaUdp = () => {
+                clientUdp.send(loginMsg, gameApp.serverUdp.port, gameApp.serverUdp.address);
+                sendLoginMsgCiaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
+            };
+            sendLoginMsgCiaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
         });
 
         clientTcp.on('data', message => {
@@ -35,10 +40,12 @@ module.exports.createPlayer = function (name) {
             const buf = new flatbuffers.ByteBuffer(data);
 
             if (!UdpAssets.Code.Remote.Flat.UdpReceived.bufferHasIdentifier(buf)) {
-                reject("Invalid buffer identifier");
+                return reject("Invalid buffer identifier");
             }
 
-            resolve({clientUdp, clientTcp, player});
+            clearTimeout(sendLoginMsgCiaUdpTask);
+
+            return resolve({clientUdp, clientTcp, player});
         });
     });
 };

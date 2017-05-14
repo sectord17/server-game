@@ -1,5 +1,4 @@
 const assert = require('assert');
-
 const playerManager = require('../lib/player-manager');
 
 describe('Connection to the game phases is that', function () {

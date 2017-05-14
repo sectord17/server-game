@@ -1,7 +1,6 @@
 const flatbuffers = require('flatbuffers').flatbuffers;
 const GameAssets = require('../lib/flatbuffers/GameSchema_generated').Assets;
 const gameApp = require('../lib/game');
-
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
 
 describe('Player is on server', function () {
@@ -12,8 +11,8 @@ describe('Player is on server', function () {
         // given
         require('../test-setup').createPlayer()
             .then(connections => Promise.all([connections, require('../test-setup').createPlayer()]))
-            .then(([connections1, connections2]) => {
-                connections1.clientUdp.on('message', message => {
+            .then(([data1, data2]) => {
+                data1.clientUdp.on('message', message => {
                     const data = new Uint8Array(message);
                     const buf = new flatbuffers.ByteBuffer(data);
 
@@ -29,7 +28,7 @@ describe('Player is on server', function () {
                     done();
                 });
 
-                connections2.clientUdp.send(
+                data2.clientUdp.send(
                     FlatBuffersHelper.playerData(), gameApp.serverUdp.port, gameApp.serverUdp.address
                 );
             })
@@ -39,9 +38,9 @@ describe('Player is on server', function () {
     it('sends shoot data', function (done) {
         // given
         require('../test-setup').createPlayer()
-            .then(connections => Promise.all([connections, require('../test-setup').createPlayer()]))
-            .then(([connections1, connections2]) => {
-                connections1.clientTcp.on('data', message => {
+            .then(data => Promise.all([data, require('../test-setup').createPlayer()]))
+            .then(([data1, data2]) => {
+                data1.clientTcp.on('data', message => {
                     const data = new Uint8Array(message);
                     const buf = new flatbuffers.ByteBuffer(data);
 
@@ -57,7 +56,7 @@ describe('Player is on server', function () {
                     done();
                 });
 
-                connections2.clientTcp.write(FlatBuffersHelper.shootData());
+                data2.clientTcp.write(FlatBuffersHelper.shootData());
             })
             .catch(error => done(error));
     });

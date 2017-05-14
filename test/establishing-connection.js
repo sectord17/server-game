@@ -1,11 +1,7 @@
 const assert = require('assert');
 const net = require('net');
 const dgram = require('dgram');
-const FlatBuffersHelper = require('../lib/flatbuffers/helper');
-const UdpAssets = require('../lib/flatbuffers/UdpSchema_generated').Assets;
-
 const playerManager = require('../lib/player-manager');
-const gameApp = require('../lib/game');
 
 describe('Establishing connection is that', function () {
     before(require('../test-setup').before);
