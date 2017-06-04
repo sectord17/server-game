@@ -1,7 +1,9 @@
 const flatbuffers = require('flatbuffers').flatbuffers;
 const GameAssets = require('../lib/flatbuffers/GameSchema_generated').Assets;
-const gameApp = require('../lib/game');
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
+
+require('../lib/communication/server-tcp');
+const serverUdp = require('../lib/communication/server-udp');
 
 describe('Player is on server', function () {
     before(require('../test-setup').before);
@@ -29,7 +31,7 @@ describe('Player is on server', function () {
                 });
 
                 data2.clientUdp.send(
-                    FlatBuffersHelper.playerData(), gameApp.serverUdp.port, gameApp.serverUdp.address
+                    FlatBuffersHelper.gameData.playerData(), serverUdp.port, serverUdp.address
                 );
             })
             .catch(error => done(error));
@@ -56,7 +58,7 @@ describe('Player is on server', function () {
                     done();
                 });
 
-                data2.clientTcp.write(FlatBuffersHelper.shootData());
+                data2.clientTcp.write(FlatBuffersHelper.gameData.shootData());
             })
             .catch(error => done(error));
     });

@@ -1,5 +1,5 @@
 const assert = require('assert');
-const playerManager = require('../lib/player-manager');
+const playerManager = require('../lib/game/player-manager');
 
 describe('Connection to the game phases is that', function () {
     before(require('../test-setup').before);
