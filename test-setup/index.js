@@ -3,6 +3,7 @@ const net = require('net');
 const dgram = require('dgram');
 const flatbuffers = require('flatbuffers').flatbuffers;
 const UdpAssets = require('../lib/flatbuffers/UdpSchema_generated').Assets;
+const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
 
 const playerManager = require('../lib/game/player-manager');
@@ -23,7 +24,7 @@ module.exports.createPlayer = function (name) {
         const player = playerManager.decide();
         const clientUdp = dgram.createSocket('udp4');
         const clientTcp = net.connect({port: serverTcp.port});
-        let sendLoginMsgCiaUdpTask = null;
+        let sendLoginMsgViaUdpTask = null;
 
         clientTcp.on('connect', () => {
             const loginMsg = FlatBuffersHelper.loginMsg(name, player.token);
@@ -32,22 +33,36 @@ module.exports.createPlayer = function (name) {
 
             const sendLoginMsgViaUdp = () => {
                 clientUdp.send(loginMsg, serverUdp.port, serverUdp.address);
-                sendLoginMsgCiaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
+                sendLoginMsgViaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
             };
-            sendLoginMsgCiaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
+            sendLoginMsgViaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
         });
 
         clientTcp.on('data', message => {
             const data = new Uint8Array(message);
             const buf = new flatbuffers.ByteBuffer(data);
 
-            if (!UdpAssets.Code.Remote.Flat.UdpReceived.bufferHasIdentifier(buf)) {
-                return reject("Invalid buffer identifier");
+            if (UdpAssets.Code.Remote.Flat.UdpReceived.bufferHasIdentifier(buf)) {
+                clearTimeout(sendLoginMsgViaUdpTask);
+                sendLoginMsgViaUdpTask = null;
+                return;
             }
 
-            clearTimeout(sendLoginMsgCiaUdpTask);
+            if (RoomAssets.Code.Remote.Flat.RoomMsg.bufferHasIdentifier(buf)) {
+                const roomMsg = RoomAssets.Code.Remote.Flat.RoomMsg.getRootAsRoomMsg(buf);
 
-            return resolve({clientUdp, clientTcp, player});
+                if (roomMsg.dataType() !== RoomAssets.Code.Remote.Flat.RoomData.RoomInfo) {
+                    return reject(new Error("Invalid roommsg data type"));
+                }
+
+                if (sendLoginMsgViaUdpTask !== null) {
+                    return reject(new Error("Received RoomMsg before UdpReceived"));
+                }
+
+                return resolve({clientUdp, clientTcp, player});
+            }
+
+            return reject(new Error("Invalid buffer identifier"));
         });
     });
 };

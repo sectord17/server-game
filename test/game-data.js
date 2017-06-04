@@ -46,16 +46,12 @@ describe('Player is on server', function () {
                     const data = new Uint8Array(message);
                     const buf = new flatbuffers.ByteBuffer(data);
 
-                    if (!GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
-                        return done("Invalid buffer identifier");
+                    if (GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
+                        const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
+                        if (gameData.dataType() === GameAssets.Code.Remote.Flat.Data.ShootData) {
+                            return done();
+                        }
                     }
-
-                    const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
-                    if (gameData.dataType() !== GameAssets.Code.Remote.Flat.Data.ShootData) {
-                        return done("Invalida data type");
-                    }
-
-                    done();
                 });
 
                 data2.clientTcp.write(FlatBuffersHelper.gameData.shootData());
