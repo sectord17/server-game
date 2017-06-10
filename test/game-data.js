@@ -31,7 +31,7 @@ describe('Player is on server', function () {
                 });
 
                 data2.clientUdp.send(
-                    FlatBuffersHelper.gameData.playerData(), serverUdp.port, serverUdp.address
+                    FlatBuffersHelper.gameData.playerData(0), serverUdp.port, serverUdp.address
                 );
             })
             .catch(error => done(error));
@@ -54,7 +54,7 @@ describe('Player is on server', function () {
                     }
                 });
 
-                data2.clientTcp.write(FlatBuffersHelper.gameData.shootData());
+                data2.clientTcp.write(FlatBuffersHelper.gameData.shootData(0));
             })
             .catch(error => done(error));
     });
