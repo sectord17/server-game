@@ -2,8 +2,7 @@ const flatbuffers = require('flatbuffers').flatbuffers;
 const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
 
-require('../lib/communication/server-tcp');
-require('../lib/communication/server-udp');
+require('../lib');
 
 describe('Player wants to join the lobby', function () {
     before(require('../test-setup').before);

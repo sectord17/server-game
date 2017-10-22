@@ -1,7 +1,5 @@
 const assert = require('assert');
-const net = require('net');
-const dgram = require('dgram');
-const playerManager = require('../lib/game/player-manager');
+const {playerManager} = require('../lib');
 
 describe('Establishing connection is that', function () {
     before(require('../test-setup').before);

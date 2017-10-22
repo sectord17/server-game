@@ -5,25 +5,22 @@ const flatbuffers = require('flatbuffers').flatbuffers;
 const UdpAssets = require('../lib/flatbuffers/UdpSchema_generated').Assets;
 const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
-
-const playerManager = require('../lib/game/player-manager');
-const serverTcp = require('../lib/communication/server-tcp');
-const serverUdp = require('../lib/communication/server-udp');
+const {playerManager, serverTCP, serverUDP} = require('../lib');
 
 module.exports.afterEach = function () {
     playerManager.deleteAll();
 };
 
 module.exports.before = function () {
-    winston.level = "warn";
+    winston.level = 'warn';
 };
 
 module.exports.createPlayer = function (name) {
     return new Promise((resolve, reject) => {
-        name = name || "Blah";
+        name = name || 'Blah';
         const player = playerManager.decide();
         const clientUdp = dgram.createSocket('udp4');
-        const clientTcp = net.connect({port: serverTcp.port});
+        const clientTcp = net.connect({port: serverTCP.port});
         let sendLoginMsgViaUdpTask = null;
 
         clientTcp.on('connect', () => {
@@ -32,7 +29,7 @@ module.exports.createPlayer = function (name) {
             clientTcp.write(loginMsg);
 
             const sendLoginMsgViaUdp = () => {
-                clientUdp.send(loginMsg, serverUdp.port, serverUdp.address);
+                clientUdp.send(loginMsg, serverUDP.port, serverUDP.address);
                 sendLoginMsgViaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
             };
             sendLoginMsgViaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
