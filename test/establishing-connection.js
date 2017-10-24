@@ -1,5 +1,6 @@
 const assert = require('assert');
 const {playerManager} = require('../lib');
+const {createPlayer} = require('../test-setup');
 
 describe('Establishing connection is that', function () {
     before(require('../test-setup').before);
@@ -8,8 +9,7 @@ describe('Establishing connection is that', function () {
     it('send login message', function (done) {
         const name = "Blah";
 
-        require('../test-setup')
-            .createPlayer(name)
+        createPlayer(name)
             .then(data => {
                 const player = data.player;
 

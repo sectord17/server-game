@@ -1,7 +1,7 @@
 const flatbuffers = require('flatbuffers').flatbuffers;
 const GameAssets = require('../lib/flatbuffers/GameSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
-
+const {createPlayer} = require('../test-setup');
 const {serverUDP} = require('../lib');
 
 describe('Player is on server', function () {
@@ -9,8 +9,8 @@ describe('Player is on server', function () {
     afterEach(require('../test-setup').afterEach);
 
     it('sends player data', function (done) {
-        require('../test-setup').createPlayer()
-            .then(connections => Promise.all([connections, require('../test-setup').createPlayer()]))
+        createPlayer()
+            .then(connections => Promise.all([connections, createPlayer()]))
             .then(([data1, data2]) => {
                 data1.clientUdp.on('message', message => {
                     const data = new Uint8Array(message);
@@ -36,8 +36,8 @@ describe('Player is on server', function () {
     });
 
     it('sends shoot data', function (done) {
-        require('../test-setup').createPlayer()
-            .then(data => Promise.all([data, require('../test-setup').createPlayer()]))
+        createPlayer()
+            .then(data => Promise.all([data, createPlayer()]))
             .then(([data1, data2]) => {
                 data1.clientTcp.on('data', message => {
                     const data = new Uint8Array(message);

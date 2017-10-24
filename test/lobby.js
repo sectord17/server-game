@@ -1,16 +1,16 @@
 const flatbuffers = require('flatbuffers').flatbuffers;
 const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
+const {createPlayer} = require('../test-setup');
 
 require('../lib');
 
-describe('Player wants to join the lobby', function () {
+describe('Player is in the lobby and', function () {
     before(require('../test-setup').before);
     afterEach(require('../test-setup').afterEach);
 
-    it('sends player data', function (done) {
-        require('../test-setup')
-            .createPlayer()
+    it('sends meready and game starts', function (done) {
+        createPlayer()
             .then(connections => Promise.all([connections, require('../test-setup').createPlayer()]))
             .then(([data1, data2]) => {
                 data2.clientTcp.on('data', message => {
