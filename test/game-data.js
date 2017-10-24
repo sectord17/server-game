@@ -9,7 +9,6 @@ describe('Player is on server', function () {
     afterEach(require('../test-setup').afterEach);
 
     it('sends player data', function (done) {
-        // given
         require('../test-setup').createPlayer()
             .then(connections => Promise.all([connections, require('../test-setup').createPlayer()]))
             .then(([data1, data2]) => {
@@ -37,7 +36,6 @@ describe('Player is on server', function () {
     });
 
     it('sends shoot data', function (done) {
-        // given
         require('../test-setup').createPlayer()
             .then(data => Promise.all([data, require('../test-setup').createPlayer()]))
             .then(([data1, data2]) => {
