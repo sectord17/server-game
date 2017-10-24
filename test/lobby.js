@@ -19,7 +19,7 @@ describe('Player wants to join the lobby', function () {
 
                     if (RoomAssets.Code.Remote.Flat.RoomMsg.bufferHasIdentifier(buf)) {
                         const roomMsg = RoomAssets.Code.Remote.Flat.RoomMsg.getRootAsRoomMsg(buf);
-                        if (roomMsg.dataType() === RoomAssets.Code.Remote.Flat.RoomData.GameStart) {
+                        if (roomMsg.dataType() === RoomAssets.Code.Remote.Flat.RoomData.GameStatusChanged) {
                             done();
                         }
                     }

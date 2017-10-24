@@ -5,7 +5,7 @@ const flatbuffers = require('flatbuffers').flatbuffers;
 const UdpAssets = require('../lib/flatbuffers/UdpSchema_generated').Assets;
 const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
-const {playerManager, serverTCP, serverUDP} = require('../lib');
+const {gameManager, playerManager, serverTCP, serverUDP} = require('../lib');
 
 module.exports.afterEach = function () {
     playerManager.deleteAll();
@@ -13,6 +13,10 @@ module.exports.afterEach = function () {
 
 module.exports.before = function () {
     winston.level = 'warn';
+
+    gameManager.shutdown = function () {
+        //
+    };
 };
 
 module.exports.createPlayer = function (name) {
