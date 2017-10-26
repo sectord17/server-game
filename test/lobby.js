@@ -10,10 +10,9 @@ describe('Player is in the lobby and', function () {
     afterEach(require('../test-setup').afterEach);
 
     it('sends meready and game starts', function (done) {
-        createPlayer()
-            .then(connections => Promise.all([connections, require('../test-setup').createPlayer()]))
-            .then(([data1, data2]) => {
-                data2.clientTcp.on('data', message => {
+        Promise.all([createPlayer(), createPlayer()])
+            .then(([connections1, connections2]) => {
+                connections2.clientTcp.on('data', message => {
                     const data = new Uint8Array(message);
                     const buf = new flatbuffers.ByteBuffer(data);
 
@@ -25,8 +24,8 @@ describe('Player is in the lobby and', function () {
                     }
                 });
 
-                data1.clientTcp.write(FlatBuffersHelper.roomMsg.meReady(true));
-                data2.clientTcp.write(FlatBuffersHelper.roomMsg.meReady(true));
+                connections1.clientTcp.write(FlatBuffersHelper.roomMsg.meReady(true));
+                connections2.clientTcp.write(FlatBuffersHelper.roomMsg.meReady(true));
             })
             .catch(error => done(error));
     });

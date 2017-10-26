@@ -9,10 +9,9 @@ describe('Player is on server', function () {
     afterEach(require('../test-setup').afterEach);
 
     it('sends player data', function (done) {
-        createPlayer()
-            .then(connections => Promise.all([connections, createPlayer()]))
-            .then(([data1, data2]) => {
-                data1.clientUdp.on('message', message => {
+        Promise.all([createPlayer(), createPlayer()])
+            .then(([connections1, connections2]) => {
+                connections1.clientUdp.on('message', message => {
                     const data = new Uint8Array(message);
                     const buf = new flatbuffers.ByteBuffer(data);
 
@@ -28,18 +27,17 @@ describe('Player is on server', function () {
                     done();
                 });
 
-                data2.clientUdp.send(
-                    FlatBuffersHelper.gameData.playerData(data2.player.id), serverUDP.port, serverUDP.address
+                connections2.clientUdp.send(
+                    FlatBuffersHelper.gameData.playerData(connections2.player.id), serverUDP.port, serverUDP.address
                 );
             })
             .catch(error => done(error));
     });
 
     it('sends shoot data', function (done) {
-        createPlayer()
-            .then(data => Promise.all([data, createPlayer()]))
-            .then(([data1, data2]) => {
-                data1.clientTcp.on('data', message => {
+        Promise.all([createPlayer(), createPlayer()])
+            .then(([connections1, connections2]) => {
+                connections1.clientTcp.on('data', message => {
                     const data = new Uint8Array(message);
                     const buf = new flatbuffers.ByteBuffer(data);
 
@@ -51,7 +49,7 @@ describe('Player is on server', function () {
                     }
                 });
 
-                data2.clientTcp.write(FlatBuffersHelper.gameData.shootData(data2.player.id));
+                connections2.clientTcp.write(FlatBuffersHelper.gameData.shootData(connections2.player.id));
             })
             .catch(error => done(error));
     });

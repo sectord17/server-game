@@ -50,12 +50,6 @@ module.exports.createPlayer = function (name) {
             }
 
             if (RoomAssets.Code.Remote.Flat.RoomMsg.bufferHasIdentifier(buf)) {
-                const roomMsg = RoomAssets.Code.Remote.Flat.RoomMsg.getRootAsRoomMsg(buf);
-
-                if (roomMsg.dataType() !== RoomAssets.Code.Remote.Flat.RoomData.RoomInfo) {
-                    return reject(new Error("Invalid roommsg data type"));
-                }
-
                 if (sendLoginMsgViaUdpTask !== null) {
                     return reject(new Error("Received RoomMsg before UdpReceived"));
                 }
