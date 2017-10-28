@@ -8,12 +8,15 @@ describe('Hit poll', function () {
 
     it('takes damage when 2 out of 3 players vote the same and 1 something else', function (done) {
         Promise.all([createPlayer(), createPlayer(), createPlayer()])
-            .then(([connection1, connection2]) => {
-                shootManager.voteForHit(1, connection1.player, connection2.player, 10);
-                shootManager.voteForHit(1, connection1.player, connection2.player, 10);
-                shootManager.voteForHit(1, connection1.player, connection2.player, 11);
+            .then(([connection1, connection2, connection3]) => {
+                const attacker = connection1.player;
+                const victim = connection2.player;
 
-                assert.equal(lifeManager.players.get(connection2.player.id).health, 90);
+                shootManager.voteForHit(connection1.player, 1, attacker, victim, 10);
+                shootManager.voteForHit(connection2.player, 1, attacker, victim, 10);
+                shootManager.voteForHit(connection3.player, 1, attacker, victim, 11);
+
+                assert.equal(lifeManager.getHealth(victim.id), 90);
                 done();
             })
             .catch(error => done(error));
@@ -22,11 +25,14 @@ describe('Hit poll', function () {
     it('takes damage when 2 out of 3 players vote the same', function (done) {
         Promise.all([createPlayer(), createPlayer(), createPlayer()])
             .then(([connection1, connection2]) => {
-                shootManager.voteForHit(2, connection1.player, connection2.player, 10);
-                shootManager.voteForHit(2, connection1.player, connection2.player, 10);
+                const attacker = connection1.player;
+                const victim = connection2.player;
+
+                shootManager.voteForHit(connection1.player, 2, attacker, victim, 10);
+                shootManager.voteForHit(connection2.player, 2, attacker, victim, 10);
 
                 setTimeout(function () {
-                    assert.equal(lifeManager.players.get(connection2.player.id).health, 90);
+                    assert.equal(lifeManager.getHealth(victim.id), 90);
                     done();
                 }, 30);
             })
@@ -35,12 +41,15 @@ describe('Hit poll', function () {
 
     it('does not take damage when less than 50% of player vote the same', function (done) {
         Promise.all([createPlayer(), createPlayer(), createPlayer()])
-            .then(([connection1, connection2]) => {
-                shootManager.voteForHit(3, connection1.player, connection2.player, 10);
-                shootManager.voteForHit(3, connection1.player, connection2.player, 11);
-                shootManager.voteForHit(3, connection1.player, connection2.player, 12);
+            .then(([connection1, connection2, connection3]) => {
+                const attacker = connection1.player;
+                const victim = connection2.player;
 
-                assert.equal(lifeManager.players.get(connection2.player.id).health, 100);
+                shootManager.voteForHit(connection1.player, 3, attacker, victim, 10);
+                shootManager.voteForHit(connection2.player, 3, attacker, victim, 11);
+                shootManager.voteForHit(connection3.player, 3, attacker, victim, 12);
+
+                assert.equal(lifeManager.getHealth(victim.id), 100);
                 done();
             })
             .catch(error => done(error));
@@ -49,12 +58,31 @@ describe('Hit poll', function () {
     it('does not take damage when less than 50% of player vote', function (done) {
         Promise.all([createPlayer(), createPlayer(), createPlayer()])
             .then(([connection1, connection2]) => {
-                shootManager.voteForHit(2, connection1.player, connection2.player, 10);
+                const attacker = connection1.player;
+                const victim = connection2.player;
+
+                shootManager.voteForHit(connection1.player, 4, attacker, victim, 10);
 
                 setTimeout(function () {
-                    assert.equal(lifeManager.players.get(connection2.player.id).health, 100);
+                    assert.equal(lifeManager.getHealth(victim.id), 100);
                     done();
                 }, 30);
+            })
+            .catch(error => done(error));
+    });
+
+    it('allows one player vote only once', function (done) {
+        Promise.all([createPlayer(), createPlayer(), createPlayer()])
+            .then(([connection1, connection2]) => {
+                const attacker = connection1.player;
+                const victim = connection2.player;
+
+                shootManager.voteForHit(connection1.player, 5, attacker, victim, 10);
+                shootManager.voteForHit(connection1.player, 5, attacker, victim, 10);
+                shootManager.voteForHit(connection1.player, 5, attacker, victim, 10);
+
+                assert.equal(lifeManager.getHealth(victim.id), 100);
+                done();
             })
             .catch(error => done(error));
     });
