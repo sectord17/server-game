@@ -6,8 +6,7 @@ const {createPlayer} = require('../test-setup');
 require('../lib');
 
 describe('Player is in the lobby and', function () {
-    before(require('../test-setup').before);
-    afterEach(require('../test-setup').afterEach);
+    beforeEach(require('../test-setup').before);
 
     it('sends meready and game starts', function (done) {
         Promise.all([createPlayer(), createPlayer()])

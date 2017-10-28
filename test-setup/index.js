@@ -7,16 +7,14 @@ const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
 const {gameManager, playerManager, serverTCP, serverUDP} = require('../lib');
 
-module.exports.afterEach = function () {
-    playerManager.deleteAll();
-};
-
 module.exports.before = function () {
     winston.level = 'warn';
 
     gameManager.shutdown = function () {
         //
     };
+
+    playerManager.deleteAll();
 };
 
 module.exports.createPlayer = function (name) {

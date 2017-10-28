@@ -5,8 +5,7 @@ const {createPlayer} = require('../test-setup');
 const {serverUDP} = require('../lib');
 
 describe('Player is on server', function () {
-    before(require('../test-setup').before);
-    afterEach(require('../test-setup').afterEach);
+    beforeEach(require('../test-setup').before);
 
     it('sends player data', function (done) {
         Promise.all([createPlayer(), createPlayer()])

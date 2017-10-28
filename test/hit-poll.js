@@ -3,8 +3,7 @@ const assert = require('assert');
 const {shootManager, lifeManager} = require('../lib');
 
 describe('Hit poll', function () {
-    before(require('../test-setup').before);
-    afterEach(require('../test-setup').afterEach);
+    beforeEach(require('../test-setup').before);
 
     it('takes damage when 2 out of 3 players vote the same and 1 something else', function (done) {
         Promise.all([createPlayer(), createPlayer(), createPlayer()])
@@ -24,7 +23,7 @@ describe('Hit poll', function () {
 
     it('takes damage when 2 out of 3 players vote the same', function (done) {
         Promise.all([createPlayer(), createPlayer(), createPlayer()])
-            .then(([connection1, connection2]) => {
+            .then(([connection1, connection2, connection3]) => {
                 const attacker = connection1.player;
                 const victim = connection2.player;
 
@@ -34,7 +33,7 @@ describe('Hit poll', function () {
                 setTimeout(function () {
                     assert.equal(lifeManager.getHealth(victim.id), 90);
                     done();
-                }, 30);
+                }, 50);
             })
             .catch(error => done(error));
     });
@@ -66,7 +65,7 @@ describe('Hit poll', function () {
                 setTimeout(function () {
                     assert.equal(lifeManager.getHealth(victim.id), 100);
                     done();
-                }, 30);
+                }, 50);
             })
             .catch(error => done(error));
     });

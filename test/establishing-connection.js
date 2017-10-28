@@ -3,8 +3,7 @@ const {playerManager} = require('../lib');
 const {createPlayer} = require('../test-setup');
 
 describe('Establishing connection is that', function () {
-    before(require('../test-setup').before);
-    afterEach(require('../test-setup').afterEach);
+    beforeEach(require('../test-setup').before);
 
     it('send login message', function (done) {
         const name = "Blah";
