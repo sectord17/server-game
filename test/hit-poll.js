@@ -1,9 +1,10 @@
-const {createPlayer} = require('../test-setup');
+const {beforeEach, describe, it} = require('mocha');
 const assert = require('assert');
+const {createPlayer, beforeEach: setupBeforeEach} = require('../test-setup');
 const {shootManager, lifeManager} = require('../lib');
 
 describe('Hit poll', function () {
-    beforeEach(require('../test-setup').before);
+    beforeEach(setupBeforeEach);
 
     it('takes damage when 2 out of 3 players vote the same and 1 something else', function (done) {
         Promise.all([createPlayer(), createPlayer(), createPlayer()])
@@ -23,7 +24,7 @@ describe('Hit poll', function () {
 
     it('takes damage when 2 out of 3 players vote the same', function (done) {
         Promise.all([createPlayer(), createPlayer(), createPlayer()])
-            .then(([connection1, connection2, connection3]) => {
+            .then(([connection1, connection2]) => {
                 const attacker = connection1.player;
                 const victim = connection2.player;
 

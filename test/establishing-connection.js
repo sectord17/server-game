@@ -1,9 +1,10 @@
+const {beforeEach, describe, it} = require('mocha');
 const assert = require('assert');
+const {createPlayer, beforeEach: setupBeforeEach} = require('../test-setup');
 const {playerManager} = require('../lib');
-const {createPlayer} = require('../test-setup');
 
 describe('Establishing connection is that', function () {
-    beforeEach(require('../test-setup').before);
+    beforeEach(setupBeforeEach);
 
     it('send login message', function (done) {
         const name = "Blah";
@@ -16,8 +17,8 @@ describe('Establishing connection is that', function () {
                 assert.equal(player.isAuthorized(), true);
                 assert.equal(player.isConnected(), true);
                 assert.equal(player.name, name);
-                assert.equal(playerManager.all().length, 1);
-                assert.equal(playerManager.allConnected().length, 1);
+                assert.equal(playerManager.getPlayers().length, 1);
+                assert.equal(playerManager.getConnectedPlayers().length, 1);
 
                 done();
             })

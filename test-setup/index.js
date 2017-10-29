@@ -2,12 +2,14 @@ const winston = require('winston');
 const net = require('net');
 const dgram = require('dgram');
 const flatbuffers = require('flatbuffers').flatbuffers;
+const Buffer = require('buffer').Buffer;
 const UdpAssets = require('../lib/flatbuffers/UdpSchema_generated').Assets;
 const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
-const {gameManager, playerManager, serverTCP, serverUDP} = require('../lib');
+const {gameManager, lifeManager, lobby, playerManager, shootManager, statsManager, serverTCP, serverUDP} = require('../lib');
+const {prependLength, splitData} = require('../lib/communication/utils');
 
-module.exports.before = function () {
+module.exports.beforeEach = function () {
     winston.level = 'warn';
 
     gameManager.shutdown = function () {
@@ -15,9 +17,16 @@ module.exports.before = function () {
     };
 
     playerManager.deleteAll();
+
+    gameManager.init();
+    lifeManager.init();
+    lobby.init();
+    playerManager.init();
+    shootManager.init();
+    statsManager.init();
 };
 
-module.exports.createPlayer = function (name) {
+module.exports.createPlayer = name => {
     return new Promise((resolve, reject) => {
         name = name || 'Blah';
         const player = playerManager.decide();
@@ -26,18 +35,18 @@ module.exports.createPlayer = function (name) {
         let sendLoginMsgViaUdpTask = null;
 
         clientTcp.on('connect', () => {
-            const loginMsg = FlatBuffersHelper.loginMsg(name, player.token);
+            const message = FlatBuffersHelper.loginMsg(name, player.token);
 
-            clientTcp.write(loginMsg);
+            clientTcp.write(prependLength(message));
 
             const sendLoginMsgViaUdp = () => {
-                clientUdp.send(loginMsg, serverUDP.port, serverUDP.address);
+                clientUdp.send(message, serverUDP.port, serverUDP.address);
                 sendLoginMsgViaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
             };
             sendLoginMsgViaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
         });
 
-        clientTcp.on('data', message => {
+        clientTcp.on('data', data => splitData(data, message => {
             const data = new Uint8Array(message);
             const buf = new flatbuffers.ByteBuffer(data);
 
@@ -48,14 +57,22 @@ module.exports.createPlayer = function (name) {
             }
 
             if (RoomAssets.Code.Remote.Flat.RoomMsg.bufferHasIdentifier(buf)) {
+                const roomMsg = RoomAssets.Code.Remote.Flat.RoomMsg.getRootAsRoomMsg(buf);
+
                 if (sendLoginMsgViaUdpTask !== null) {
-                    return reject(new Error("Received RoomMsg before UdpReceived"));
+                    reject(new Error("Received RoomMsg before UdpReceived"));
+                    return;
                 }
 
-                return resolve({clientUdp, clientTcp, player});
+                if (roomMsg.dataType() === RoomAssets.Code.Remote.Flat.RoomData.RoomInfo) {
+                    resolve({clientUdp, clientTcp, player});
+                    return;
+                }
+
+                return;
             }
 
             return reject(new Error("Invalid buffer identifier"));
-        });
+        }));
     });
 };

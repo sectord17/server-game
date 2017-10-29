@@ -1,17 +1,19 @@
+const {beforeEach, describe, it} = require('mocha');
+const {createPlayer, beforeEach: setupBeforeEach} = require('../test-setup');
 const flatbuffers = require('flatbuffers').flatbuffers;
 const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');
-const {createPlayer} = require('../test-setup');
+const {prependLength, splitData} = require('../lib/communication/utils');
 
 require('../lib');
 
 describe('Player is in the lobby and', function () {
-    beforeEach(require('../test-setup').before);
+    beforeEach(setupBeforeEach);
 
     it('sends meready and game starts', function (done) {
         Promise.all([createPlayer(), createPlayer()])
             .then(([connections1, connections2]) => {
-                connections2.clientTcp.on('data', message => {
+                connections2.clientTcp.on('data', data => splitData(data, message => {
                     const data = new Uint8Array(message);
                     const buf = new flatbuffers.ByteBuffer(data);
 
@@ -21,10 +23,12 @@ describe('Player is in the lobby and', function () {
                             done();
                         }
                     }
-                });
+                }));
 
-                connections1.clientTcp.write(FlatBuffersHelper.roomMsg.meReady(true));
-                connections2.clientTcp.write(FlatBuffersHelper.roomMsg.meReady(true));
+                const message = FlatBuffersHelper.roomMsg.meReady(true);
+                const buffer = prependLength(message);
+                connections1.clientTcp.write(buffer);
+                connections2.clientTcp.write(buffer);
             })
             .catch(error => done(error));
     });

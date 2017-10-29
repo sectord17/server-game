@@ -1,8 +1,10 @@
+const {beforeEach, describe, it} = require('mocha');
 const assert = require('assert');
+const {beforeEach: setupBeforeEach} = require('../test-setup');
 const {playerManager} = require('../lib');
 
 describe('Connection to the game phases is that', function () {
-    beforeEach(require('../test-setup').before);
+    beforeEach(setupBeforeEach);
 
     it('should decide to connect', function () {
         // given
@@ -14,8 +16,8 @@ describe('Connection to the game phases is that', function () {
         assert.equal(player.isDecided(), true);
         assert.equal(player.isAuthorized(), false);
         assert.equal(player.isConnected(), false);
-        assert.equal(playerManager.all().length, 1);
-        assert.equal(playerManager.allConnected().length, 0);
+        assert.equal(playerManager.getPlayers().length, 1);
+        assert.equal(playerManager.getConnectedPlayers().length, 0);
     });
 
     it('should authorizes', function (done) {
@@ -35,8 +37,8 @@ describe('Connection to the game phases is that', function () {
                 assert.equal(player.isAuthorized(), true);
                 assert.equal(player.isConnected(), false);
                 assert.equal(player.name, name);
-                assert.equal(playerManager.all().length, 1);
-                assert.equal(playerManager.allConnected().length, 0);
+                assert.equal(playerManager.getPlayers().length, 1);
+                assert.equal(playerManager.getConnectedPlayers().length, 0);
                 done();
             })
             .catch(error => done(error));
@@ -64,8 +66,8 @@ describe('Connection to the game phases is that', function () {
                 assert.equal(player.name, name);
                 assert.equal(player.communicationHandler.address, address);
                 assert.equal(player.communicationHandler.udpPort, udpPort);
-                assert.equal(playerManager.all().length, 1);
-                assert.equal(playerManager.allConnected().length, 1);
+                assert.equal(playerManager.getPlayers().length, 1);
+                assert.equal(playerManager.getConnectedPlayers().length, 1);
                 done();
             })
             .catch(error => done(error));
