@@ -2,7 +2,6 @@ const winston = require('winston');
 const net = require('net');
 const dgram = require('dgram');
 const flatbuffers = require('flatbuffers').flatbuffers;
-const Buffer = require('buffer').Buffer;
 const UdpAssets = require('../lib/flatbuffers/UdpSchema_generated').Assets;
 const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../lib/flatbuffers/helper');

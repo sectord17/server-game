@@ -81,8 +81,10 @@ describe('Hit poll', function () {
                 shootManager.voteForHit(connection1.player, 5, attacker, victim, 10);
                 shootManager.voteForHit(connection1.player, 5, attacker, victim, 10);
 
-                assert.equal(lifeManager.getHealth(victim.id), 100);
-                done();
+                setTimeout(function () {
+                    assert.equal(lifeManager.getHealth(victim.id), 100);
+                    done();
+                }, 0);
             })
             .catch(error => done(error));
     });
