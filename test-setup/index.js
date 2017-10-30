@@ -16,6 +16,8 @@ module.exports.beforeEach = function () {
         //
     };
 
+    shootManager.HIT_POLL_DURATION = 0;
+
     playerManager.deleteAll();
 
     gameManager.init();

@@ -34,7 +34,7 @@ describe('Hit poll', function () {
                 setTimeout(function () {
                     assert.equal(lifeManager.getHealth(victim.id), 90);
                     done();
-                }, 50);
+                }, 0);
             })
             .catch(error => done(error));
     });
@@ -66,7 +66,7 @@ describe('Hit poll', function () {
                 setTimeout(function () {
                     assert.equal(lifeManager.getHealth(victim.id), 100);
                     done();
-                }, 50);
+                }, 0);
             })
             .catch(error => done(error));
     });
