@@ -1,11 +1,9 @@
 const {beforeEach, describe, it} = require('mocha');
-const {createPlayer, beforeEach: setupBeforeEach} = require('../test-setup');
 const flatbuffers = require('flatbuffers').flatbuffers;
-const RoomAssets = require('../lib/flatbuffers/RoomSchema_generated').Assets;
-const FlatBuffersHelper = require('../lib/flatbuffers/helper');
-const {prependLength, splitData} = require('../lib/communication/utils');
-
-require('../lib');
+const {createPlayer, beforeEach: setupBeforeEach} = require('../utils/helpers');
+const {prependLength, splitData} = require('../../lib/communication/utils');
+const RoomAssets = require('../../lib/flatbuffers/RoomSchema_generated').Assets;
+const FlatBuffersHelper = require('../../lib/flatbuffers/helper');
 
 describe('Player is in the lobby and', function () {
     beforeEach(setupBeforeEach);

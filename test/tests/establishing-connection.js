@@ -1,7 +1,7 @@
 const {beforeEach, describe, it} = require('mocha');
 const assert = require('assert');
-const {createPlayer, beforeEach: setupBeforeEach} = require('../test-setup');
-const {playerManager} = require('../lib');
+const {playerManager} = require('../utils/lib');
+const {createPlayer, beforeEach: setupBeforeEach} = require('../utils/helpers');
 
 describe('Establishing connection is that', function () {
     beforeEach(setupBeforeEach);

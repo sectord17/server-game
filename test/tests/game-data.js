@@ -1,11 +1,10 @@
 const {beforeEach, describe, it} = require('mocha');
-const assert = require('assert');
-const {createPlayer, beforeEach: setupBeforeEach} = require('../test-setup');
+const {serverUDP} = require('../utils/lib');
+const {createPlayer, beforeEach: setupBeforeEach} = require('../utils/helpers');
 const flatbuffers = require('flatbuffers').flatbuffers;
-const GameAssets = require('../lib/flatbuffers/GameSchema_generated').Assets;
-const FlatBuffersHelper = require('../lib/flatbuffers/helper');
-const {prependLength, splitData} = require('../lib/communication/utils');
-const {serverUDP} = require('../lib');
+const GameAssets = require('../../lib/flatbuffers/GameSchema_generated').Assets;
+const FlatBuffersHelper = require('../../lib/flatbuffers/helper');
+const {prependLength, splitData} = require('../../lib/communication/utils');
 
 describe('Player is on server', function () {
     beforeEach(setupBeforeEach);

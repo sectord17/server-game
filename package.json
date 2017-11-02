@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "IP=127.0.0.1 GAME_PORT=0 HTTP_PORT=0 TOKEN=secret mocha test/**",
-    "test-coverage": "IP=127.0.0.1 GAME_PORT=0 HTTP_PORT=0 TOKEN=secret nyc mocha test/**"
+    "test": "mocha test/**",
+    "test-coverage": "nyc mocha test/**"
   },
   "dependencies": {
     "body-parser": "~1.16.0",

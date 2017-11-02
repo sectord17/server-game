@@ -1,7 +1,7 @@
 const {beforeEach, describe, it} = require('mocha');
 const assert = require('assert');
-const {createPlayer, beforeEach: setupBeforeEach} = require('../test-setup');
-const {shootManager, lifeManager} = require('../lib');
+const {shootManager, lifeManager} = require('../utils/lib');
+const {createPlayer, beforeEach: setupBeforeEach} = require('../utils/helpers');
 
 describe('Hit poll', function () {
     beforeEach(setupBeforeEach);
