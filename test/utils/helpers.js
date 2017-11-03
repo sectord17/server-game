@@ -7,6 +7,7 @@ const RoomAssets = require('../../lib/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../../lib/flatbuffers/helper');
 const {gameManager, lifeManager, lobby, playerManager, shootManager, statsManager, serverTCP, serverUDP} = require('./lib');
 const {prependLength, splitData} = require('../../lib/communication/utils');
+const Buffer = require('buffer').Buffer;
 
 module.exports.beforeEach = function () {
     winston.level = 'warn';
@@ -41,15 +42,15 @@ module.exports.createPlayer = name => {
             clientTcp.write(prependLength(message));
 
             const sendLoginMsgViaUdp = () => {
-                clientUdp.send(message, serverUDP.port, serverUDP.address);
+                clientUdp.send(Buffer.from(message), serverUDP.port, '127.0.0.1');
                 sendLoginMsgViaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
             };
             sendLoginMsgViaUdpTask = setTimeout(sendLoginMsgViaUdp, 1);
         });
 
-        clientTcp.on('data', data => splitData(data, message => {
-            const data = new Uint8Array(message);
-            const buf = new flatbuffers.ByteBuffer(data);
+        clientTcp.on('data', data => splitData(data, data => {
+            const message = new Uint8Array(data);
+            const buf = new flatbuffers.ByteBuffer(message);
 
             if (UdpAssets.Code.Remote.Flat.UdpReceived.bufferHasIdentifier(buf)) {
                 clearTimeout(sendLoginMsgViaUdpTask);
