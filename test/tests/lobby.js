@@ -2,7 +2,9 @@ const {beforeEach, describe, it} = require('mocha');
 const flatbuffers = require('flatbuffers').flatbuffers;
 const {createPlayer, beforeEach: setupBeforeEach} = require('../utils/helpers');
 const {prependLength, splitData} = require('../../lib/communication/utils');
+const Player = require('../../lib/game/player');
 const RoomAssets = require('../../lib/flatbuffers/RoomSchema_generated').Assets;
+const ErrorAssets = require('../../lib/flatbuffers/ErrorSchema_generated').Assets;
 const FlatBuffersHelper = require('../../lib/flatbuffers/helper');
 
 describe('Player is in the lobby and', function () {
@@ -11,9 +13,9 @@ describe('Player is in the lobby and', function () {
     it('sends meready and game starts', function (done) {
         Promise.all([createPlayer(), createPlayer()])
             .then(([connections1, connections2]) => {
-                connections2.clientTcp.on('data', data => splitData(data, message => {
-                    const data = new Uint8Array(message);
-                    const buf = new flatbuffers.ByteBuffer(data);
+                connections2.clientTcp.on('data', data => splitData(data, data => {
+                    const message = new Uint8Array(data);
+                    const buf = new flatbuffers.ByteBuffer(message);
 
                     if (RoomAssets.Code.Remote.Flat.RoomMsg.bufferHasIdentifier(buf)) {
                         const roomMsg = RoomAssets.Code.Remote.Flat.RoomMsg.getRootAsRoomMsg(buf);
@@ -29,6 +31,26 @@ describe('Player is in the lobby and', function () {
                 connections2.clientTcp.write(buffer);
             })
             .catch(error => done(error));
+    });
+
+    it('cannot change team when there are more or equal players in opposite team', function (done) {
+        Promise.all([createPlayer(), createPlayer()])
+            .then(([connections1]) => {
+                const newTeam = connections1.player.team === Player.TEAM_BLUE ? Player.TEAM_RED : Player.TEAM_BLUE;
+                const message = FlatBuffersHelper.roomMsg.changeTeam(connections1.player.id, newTeam);
+                const buffer = prependLength(message);
+
+                connections1.clientTcp.on('data', data => splitData(data, data => {
+                    const message = new Uint8Array(data);
+                    const buf = new flatbuffers.ByteBuffer(message);
+
+                    if (ErrorAssets.Code.Remote.Flat.ErrorMessage.bufferHasIdentifier(buf)) {
+                        done();
+                    }
+                }));
+
+                connections1.clientTcp.write(buffer);
+            });
     });
 });
 

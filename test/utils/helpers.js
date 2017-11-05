@@ -28,6 +28,10 @@ module.exports.beforeEach = function () {
     statsManager.init();
 };
 
+/**
+ * @param {string} [name]
+ * @returns {Promise.<{player: Player, clientUdp, clientTcp}>}
+ */
 module.exports.createPlayer = name => {
     return new Promise((resolve, reject) => {
         name = name || 'Blah';
