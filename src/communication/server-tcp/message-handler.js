@@ -76,7 +76,7 @@ module.exports = exports = class MessageHandler {
             return this._onHitReqData(gameData.data(new GameAssets.Code.Remote.Flat.HitReqData()));
         }
 
-        if (dataType === GameAssets.Code.Remote.Flat.Data.HitReqData) {
+        if (dataType === GameAssets.Code.Remote.Flat.Data.ShootData) {
             return this._onShootData(message);
         }
 
