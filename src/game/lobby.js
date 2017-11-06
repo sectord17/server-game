@@ -121,7 +121,7 @@ module.exports = exports = class Lobby {
      */
     changeTeam(player, team) {
         if (!this._canChangeTeam(team)) {
-            const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_CHANGE_TEAM, team);
+            const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_CHANGE_TEAM);
             this.sender.toPlayerViaTCP(player, message);
             return;
         }

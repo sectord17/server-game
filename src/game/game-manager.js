@@ -1,4 +1,6 @@
 const winston = require('winston');
+const GameBootedEvent = require('../event/events/GameBootedEvent');
+const GameInProgressEvent = require('../event/events/GameInProgressEvent');
 const RoomAssets = include('/src/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
@@ -7,10 +9,15 @@ const STARTING = 1;
 const IN_PROGRESS = 2;
 const FINISHED = 3;
 
-const TIME_FOR_GIVING_UP = 5000;
-
 module.exports = exports = class GameManager {
-    constructor() {
+    static get TIME_FOR_GIVING_UP() {
+        return 5 * 1000;
+    }
+
+    constructor(broadcaster) {
+        /** @type {Broadcaster} */
+        this.broadcaster = broadcaster;
+
         this.init();
     }
 
@@ -28,6 +35,9 @@ module.exports = exports = class GameManager {
 
         /** @type {SlaveSDK} */
         this.slaveSDK = dependencies.slaveSDK;
+
+        /** @type {Broadcaster} */
+        this.broadcaster = dependencies.broadcaster;
     }
 
     gamePreparing() {
@@ -41,7 +51,7 @@ module.exports = exports = class GameManager {
 
     gameStarting() {
         this.status = STARTING;
-        this._timeoutGameInProgress = setTimeout(this.gameInProgress.bind(this), TIME_FOR_GIVING_UP);
+        this._timeoutGameInProgress = setTimeout(this.gameInProgress.bind(this), GameManager.TIME_FOR_GIVING_UP);
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.Start);
     }
 
@@ -50,6 +60,8 @@ module.exports = exports = class GameManager {
         this._markPlayersAsActive();
         this._timeoutGameInProgress = null;
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.InProgress);
+
+        this.broadcaster.fire(new GameInProgressEvent());
     }
 
     gameFinish() {
@@ -64,6 +76,7 @@ module.exports = exports = class GameManager {
 
     booted() {
         this.slaveSDK.booted();
+        this.broadcaster.fire(new GameBootedEvent());
     }
 
     shutdown() {

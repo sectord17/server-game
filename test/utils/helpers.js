@@ -5,8 +5,9 @@ const flatbuffers = require('flatbuffers').flatbuffers;
 const UdpAssets = require('../../src/flatbuffers/UdpSchema_generated').Assets;
 const RoomAssets = require('../../src/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../../src/flatbuffers/helper');
-const {gameManager, lifeManager, lobby, playerManager, shootManager, statsManager, serverTCP, serverUDP} = require('./src');
+const {broadcaster, gameManager, lifeManager, lobby, playerManager, shootManager, statsManager, serverTCP, serverUDP} = require('./src');
 const {prependLength, splitData} = require('../../src/communication/utils');
+const GameBootedEvent = require('../../src/event/events/GameBootedEvent');
 const Buffer = require('buffer').Buffer;
 
 module.exports.beforeEach = function () {
@@ -17,9 +18,11 @@ module.exports.beforeEach = function () {
     };
 
     shootManager.HIT_POLL_DURATION = 0;
+    gameManager.TIME_FOR_GIVING_UP = 0;
 
     playerManager.deleteAll();
 
+    broadcaster.init();
     gameManager.init();
     lifeManager.init();
     lobby.init();
@@ -82,3 +85,15 @@ module.exports.createPlayer = name => {
         }));
     });
 };
+
+module.exports.startGame = players => new Promise(resolve => {
+    broadcaster.listen(GameBootedEvent, () => {
+        console.log('works');
+        resolve(players);
+    });
+
+    const message = FlatBuffersHelper.roomMsg.meReady(true);
+    const buffer = prependLength(message);
+
+    players.forEach(player => player.clientTcp.write(buffer));
+});

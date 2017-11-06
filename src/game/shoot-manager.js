@@ -1,6 +1,10 @@
 const HitPoll = require('./hit-poll');
 
 module.exports = exports = class ShootManager {
+    static get HIT_POLL_DURATION() {
+        return 50;
+    }
+
     /**
      * @param {PlayerManager} playerManager
      */
@@ -15,10 +19,6 @@ module.exports = exports = class ShootManager {
 
         /** @type {Map.<int, Object>} */
         this.timeouts = new Map();
-    }
-
-    static get HIT_POLL_DURATION() {
-        return 50;
     }
 
     /**

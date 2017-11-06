@@ -3,6 +3,7 @@ const {include} = require('./utils');
 global.include = include;
 
 const Supervisor = require('./supervisor');
+const Broadcaster = require('./event/broadcaster');
 const PlayerManager = require('./game/player-manager');
 const GameManager = require('./game/game-manager');
 const LifeManager = require('./game/life-manager');
@@ -20,7 +21,8 @@ let gamePort = config.get('GAME_PORT');
 let httpPort = config.get('HTTP_PORT');
 
 const slaveSDK = new SlaveSDK();
-const gameManager = new GameManager();
+const broadcaster = new Broadcaster();
+const gameManager = new GameManager(broadcaster);
 const lobby = new Lobby();
 const sender = new Sender();
 const statsManager = new StatsManager(sender, gameManager);
@@ -32,11 +34,12 @@ const serverTCP = new ServerTCP(gamePort);
 const serverUDP = new ServerUDP(playerManager, lobby, gamePort);
 const serverHTTP = new ServerHTTP(httpPort);
 
-gameManager.use({playerManager, sender, slaveSDK});
+gameManager.use({broadcaster, playerManager, sender, slaveSDK});
 lobby.use({gameManager, playerManager, sender});
 sender.use({playerManager});
 
 module.exports = exports = {
+    broadcaster,
     lifeManager,
     gameManager,
     playerManager,

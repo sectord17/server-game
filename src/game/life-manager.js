@@ -1,11 +1,18 @@
+const moment = require('moment');
 const debug = require('debug')('sectord17-game:life-manager');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const ModelNotFoundError = require('../errors/model-not-found-error');
-
-const RESPAWN_COOLDOWN = 5000;
-const MAX_HEALTH = 100;
+const FlatbufferErrors = require('../errors/flatbuffer-errors');
 
 module.exports = exports = class LifeManager {
+    static get RESPAWN_COOLDOWN() {
+        return 5 * 1000;
+    }
+
+    static get MAX_HEALTH() {
+        return 100;
+    }
+
     /**
      * @param {Sender} sender
      * @param {StatsManager} statsManager
@@ -17,7 +24,7 @@ module.exports = exports = class LifeManager {
     }
 
     init() {
-        /** @type {Map.<int, {health: int, deathTime: int}>} */
+        /** @type {Map.<int, {health: int, deathTime: [moment]}>} */
         this.players = new Map();
     }
 
@@ -60,25 +67,24 @@ module.exports = exports = class LifeManager {
      * @param {number} x
      * @param {number} y
      * @param {number} z
-     * @returns {boolean}
      */
     respawnPlayer(player, x, y, z) {
         const playerLife = this.players.get(player.id);
 
-        if (Date.now() - playerLife.deathTime < RESPAWN_COOLDOWN) {
-            return false;
+        if (moment() - playerLife.deathTime < LifeManager.RESPAWN_COOLDOWN) {
+            const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_RESPAWN);
+            this.sender.toPlayerViaTCP(player, message);
+            return;
         }
 
         // TODO: Position validation
 
-        playerLife.health = MAX_HEALTH;
+        playerLife.health = LifeManager.MAX_HEALTH;
 
         const message = FlatBuffersHelper.gameData.playerRespawnAckData(player.id, x, y, z);
         this.sender.toEveryPlayerViaTCP(message);
 
         debug(`Player ${player.getInlineDetails()} has been respawned`);
-
-        return true;
     }
 
     /**
@@ -87,7 +93,7 @@ module.exports = exports = class LifeManager {
      */
     onPlayerDeath(killer, victim) {
         const playerLife = this.players.get(victim.id);
-        playerLife.deathTime = Date.now();
+        playerLife.deathTime = moment();
 
         this.statsManager.onPlayerDeath(killer, victim);
 
@@ -107,8 +113,8 @@ module.exports = exports = class LifeManager {
         }
 
         this.players.set(player.id, {
-            health: 100,
-            deathTime: 0,
+            health: LifeManager.MAX_HEALTH,
+            deathTime: null,
         });
     }
 
