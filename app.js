@@ -10,4 +10,4 @@ if (process.env.SENTRY_DSN) {
 
 winston.level = 'debug';
 
-require('./lib');
+require('./src');
