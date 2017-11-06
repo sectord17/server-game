@@ -24,18 +24,36 @@ module.exports = exports = class LifeManager {
     }
 
     /**
-     * @param {int} playerId
+     * @param {Player} player
      * @returns {int}
      * @throws ModelNotFoundError
      */
-    getHealth(playerId) {
-        const playerLife = this.players.get(playerId);
+    getHealth(player) {
+        const playerLife = this.players.get(player.id);
 
         if (playerLife === undefined) {
-            throw new ModelNotFoundError('player-life', playerId);
+            throw new ModelNotFoundError('player-life', player.id);
         }
 
         return playerLife.health;
+    }
+
+    getPlayerLife(player) {
+        const playerLife = this.players.get(player.id);
+
+        if (playerLife === undefined) {
+            throw new ModelNotFoundError('player-life', player.id);
+        }
+
+        return playerLife;
+    }
+
+    /**
+     * @param {Player} player
+     * @returns {boolean}
+     */
+    isAlive(player) {
+        return this.getHealth(player) > 0;
     }
 
     /**
@@ -44,12 +62,11 @@ module.exports = exports = class LifeManager {
      * @param {int} damage
      */
     takeDamage(attacker, victim, damage) {
-        const playerLife = this.players.get(victim.id);
-
-        if (playerLife === undefined) {
-            throw new ModelNotFoundError('player-life', victim.id);
+        if (!this.isAlive(victim) || !this.isAlive(attacker)) {
+            return;
         }
 
+        const playerLife = this.getPlayerLife(victim);
         playerLife.health = Math.max(0, playerLife.health - damage);
 
         if (playerLife.get <= 0) {
@@ -63,10 +80,10 @@ module.exports = exports = class LifeManager {
      * @param {number} y
      * @param {number} z
      */
-    respawnPlayer(player, x, y, z) {
-        const playerLife = this.players.get(player.id);
+    spawnPlayer(player, x, y, z) {
+        const playerLife = this.getPlayerLife(player);
 
-        if (moment() - playerLife.deathTime < this.RESPAWN_COOLDOWN) {
+        if (this.isAlive(player) || moment() - playerLife.deathTime < this.RESPAWN_COOLDOWN) {
             const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_RESPAWN);
             this.sender.toPlayerViaTCP(player, message);
             return;
@@ -108,7 +125,7 @@ module.exports = exports = class LifeManager {
         }
 
         this.players.set(player.id, {
-            health: this.MAX_HEALTH,
+            health: 0,
             deathTime: null,
         });
     }

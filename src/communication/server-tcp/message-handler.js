@@ -113,7 +113,7 @@ module.exports = exports = class MessageHandler {
      */
     _onPlayerRespawnReqData(data) {
         const position = data.position();
-        this.lifeManager.respawnPlayer(this.player, position.x, position.y, position.z);
+        this.lifeManager.spawnPlayer(this.player, position.x, position.y, position.z);
     }
 
     /**

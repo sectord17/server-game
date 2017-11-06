@@ -86,6 +86,13 @@ module.exports.createPlayer = name => {
     });
 };
 
+module.exports.createLivePlayer = name => module.exports
+    .createPlayer(name)
+    .then(connection => {
+        lifeManager.spawnPlayer(connection.player);
+        return connection;
+    });
+
 module.exports.startGame = players => new Promise(resolve => {
     broadcaster.listen(GameInProgressEvent, () => resolve(players));
 
