@@ -1,8 +1,8 @@
-const transformPlayer = include('/lib/transformers/player-transformer');
+const transformPlayer = include('/src/transformers/player-transformer');
 const config = require('../../config');
 
 module.exports = app => {
-    const {playerManager, gameManager} = include('/lib');
+    const {playerManager, gameManager} = include('/src');
 
     // Authorize every request
     const token = config.get('TOKEN');

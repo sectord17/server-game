@@ -2,10 +2,10 @@ const winston = require('winston');
 const dgram = require('dgram');
 const debug = require('debug')('sectord17-game:server-udp');
 const Buffer = require('buffer').Buffer;
-const report = include('/lib/errors/reporter');
+const report = include('/src/errors/reporter');
 const flatbuffers = require('flatbuffers').flatbuffers;
-const LoginAssets = include('/lib/flatbuffers/LoginSchema_generated').Assets;
-const ConnectingError = include('/lib/errors/connecting-error');
+const LoginAssets = include('/src/flatbuffers/LoginSchema_generated').Assets;
+const ConnectingError = include('/src/errors/connecting-error');
 
 module.exports = exports = class ServerUDP {
     constructor(playerManager, lobby, port) {

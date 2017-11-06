@@ -1,5 +1,5 @@
 const debug = require('debug')('sectord17-game:life-manager');
-const FlatBuffersHelper = include('/lib/flatbuffers/helper');
+const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const ModelNotFoundError = require('../errors/model-not-found-error');
 
 const RESPAWN_COOLDOWN = 5000;

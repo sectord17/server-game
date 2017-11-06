@@ -4,7 +4,7 @@ const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss:SSS";
  * @param {Player} player
  */
 module.exports = player => {
-    const {lobby} = include('/lib');
+    const {lobby} = include('/src');
 
     let response = {
         id: player.id,

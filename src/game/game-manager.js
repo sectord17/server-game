@@ -1,6 +1,6 @@
 const winston = require('winston');
-const RoomAssets = include('/lib/flatbuffers/RoomSchema_generated').Assets;
-const FlatBuffersHelper = include('/lib/flatbuffers/helper');
+const RoomAssets = include('/src/flatbuffers/RoomSchema_generated').Assets;
+const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
 const PREPARING = 0;
 const STARTING = 1;

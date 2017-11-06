@@ -2,12 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
 const debug = require('debug')('sectord17-game:server-http');
-const report = include('/lib/errors/reporter');
+const report = include('/src/errors/reporter');
 
-const BasicError = include('/lib/errors/basic-error');
-const ConnectingError = include('/lib/errors/connecting-error');
-const ModelNotFoundError = include('/lib/errors/model-not-found-error');
-const EndpointNotFoundError = include('/lib/errors/endpoint-not-found-error');
+const BasicError = include('/src/errors/basic-error');
+const ConnectingError = include('/src/errors/connecting-error');
+const ModelNotFoundError = include('/src/errors/model-not-found-error');
+const EndpointNotFoundError = include('/src/errors/endpoint-not-found-error');
 
 module.exports = exports = class ServerHTTP {
     constructor(port) {

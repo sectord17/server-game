@@ -307,7 +307,7 @@ module.exports = {
          * @private
          */
         _playerInfo(builder, player) {
-            const {lobby} = include('/lib');
+            const {lobby} = include('/src');
             const nick = builder.createString(player.name);
 
             RoomAssets.Code.Remote.Flat.PlayerInfo.startPlayerInfo(builder);

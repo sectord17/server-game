@@ -1,5 +1,5 @@
-const GameAssets = include('/lib/flatbuffers/GameSchema_generated').Assets;
-const RoomAssets = include('/lib/flatbuffers/RoomSchema_generated').Assets;
+const GameAssets = include('/src/flatbuffers/GameSchema_generated').Assets;
+const RoomAssets = include('/src/flatbuffers/RoomSchema_generated').Assets;
 const Buffer = require('buffer').Buffer;
 const debug = require('debug')('sectord17-game:message-handler');
 
@@ -8,7 +8,7 @@ module.exports = exports = class MessageHandler {
      * @param {Player} player
      */
     constructor(player) {
-        const {playerManager, lifeManager, shootManager, lobby, sender} = include('/lib');
+        const {playerManager, lifeManager, shootManager, lobby, sender} = include('/src');
 
         /** @type {PlayerManager} */
         this.playerManager = playerManager;

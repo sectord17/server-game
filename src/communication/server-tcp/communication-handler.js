@@ -1,6 +1,6 @@
 const debug = require('debug')('sectord17-game:communication-handler');
-const GameAssets = include('/lib/flatbuffers/GameSchema_generated').Assets;
-const RoomAssets = include('/lib/flatbuffers/RoomSchema_generated').Assets;
+const GameAssets = include('/src/flatbuffers/GameSchema_generated').Assets;
+const RoomAssets = include('/src/flatbuffers/RoomSchema_generated').Assets;
 const MessageHandler = require('./message-handler');
 
 module.exports = class CommunicationHandler {
@@ -9,7 +9,7 @@ module.exports = class CommunicationHandler {
      * @param {ConnectionHandler} connectionHandler
      */
     constructor(player, connectionHandler) {
-        const {serverUDP} = include('/lib');
+        const {serverUDP} = include('/src');
 
         /** @type {ServerUDP} */
         this.serverUDP = serverUDP;

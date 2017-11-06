@@ -1,6 +1,6 @@
 const debug = require('debug')('sectord17-game:lobby');
 const winston = require('winston');
-const FlatBuffersHelper = include('/lib/flatbuffers/helper');
+const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const Player = require('./player');
 const FlatbufferErrors = require('../errors/flatbuffer-errors');
 

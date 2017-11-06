@@ -7,7 +7,7 @@ module.exports = exports = class HitPoll {
      * @param {int} hitId
      */
     constructor(hitId) {
-        const {lifeManager, playerManager} = include('/lib');
+        const {lifeManager, playerManager} = include('/src');
 
         this.hitId = hitId;
 

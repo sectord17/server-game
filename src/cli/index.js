@@ -1,6 +1,6 @@
 const readline = require('readline');
-const {playerManager} = include('/lib');
-const transformPlayer = include('/lib/transformers/player-transformer');
+const {playerManager} = include('/src');
+const transformPlayer = include('/src/transformers/player-transformer');
 
 const rl = readline.createInterface({
     input: process.stdin,

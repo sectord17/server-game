@@ -2,10 +2,10 @@ const uuidV4 = require('uuid/v4');
 const debug = require('debug')('sectord17-game:player-manager');
 const winston = require('winston');
 const Player = require('./player');
-const CommunicationHandler = include('/lib/communication/server-tcp/communication-handler');
-const ConnectingError = include('/lib/errors/connecting-error');
-const ModelNotFoundError = include('/lib/errors/model-not-found-error');
-const FlatBuffersHelper = include('/lib/flatbuffers/helper');
+const CommunicationHandler = include('/src/communication/server-tcp/communication-handler');
+const ConnectingError = include('/src/errors/connecting-error');
+const ModelNotFoundError = include('/src/errors/model-not-found-error');
+const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
 module.exports = exports = class PlayerManager {
     static get MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT() {

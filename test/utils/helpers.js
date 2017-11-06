@@ -2,11 +2,11 @@ const winston = require('winston');
 const net = require('net');
 const dgram = require('dgram');
 const flatbuffers = require('flatbuffers').flatbuffers;
-const UdpAssets = require('../../lib/flatbuffers/UdpSchema_generated').Assets;
-const RoomAssets = require('../../lib/flatbuffers/RoomSchema_generated').Assets;
-const FlatBuffersHelper = require('../../lib/flatbuffers/helper');
-const {gameManager, lifeManager, lobby, playerManager, shootManager, statsManager, serverTCP, serverUDP} = require('./lib');
-const {prependLength, splitData} = require('../../lib/communication/utils');
+const UdpAssets = require('../../src/flatbuffers/UdpSchema_generated').Assets;
+const RoomAssets = require('../../src/flatbuffers/RoomSchema_generated').Assets;
+const FlatBuffersHelper = require('../../src/flatbuffers/helper');
+const {gameManager, lifeManager, lobby, playerManager, shootManager, statsManager, serverTCP, serverUDP} = require('./src');
+const {prependLength, splitData} = require('../../src/communication/utils');
 const Buffer = require('buffer').Buffer;
 
 module.exports.beforeEach = function () {

@@ -1,5 +1,5 @@
 const debug = require('debug')('sectord17-game:stats-manager');
-const FlatBuffersHelper = include('/lib/flatbuffers/helper');
+const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
 const KILL_POINTS = 10;
 const POINTS_THRESHOLD = 100;

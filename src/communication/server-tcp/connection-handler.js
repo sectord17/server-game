@@ -1,13 +1,13 @@
 const flatbuffers = require('flatbuffers').flatbuffers;
-const LoginAssets = include('/lib/flatbuffers/LoginSchema_generated').Assets;
+const LoginAssets = include('/src/flatbuffers/LoginSchema_generated').Assets;
 const debug = require('debug')('sectord17-game:connection-handler');
-const report = include('/lib/errors/reporter');
-const ConnectingError = include('/lib/errors/connecting-error');
+const report = include('/src/errors/reporter');
+const ConnectingError = include('/src/errors/connecting-error');
 const {prependLength, splitData} = require('../utils');
 
 module.exports = exports = class ConnectionHandler {
     constructor(socket) {
-        const {playerManager} = include('/lib');
+        const {playerManager} = include('/src');
 
         this.playerManager = playerManager;
         this.socket = socket.setNoDelay(true);

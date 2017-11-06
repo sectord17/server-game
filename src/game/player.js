@@ -1,5 +1,5 @@
 const moment = require('moment');
-const RoomAssets = include('/lib/flatbuffers/RoomSchema_generated').Assets;
+const RoomAssets = include('/src/flatbuffers/RoomSchema_generated').Assets;
 
 module.exports = exports = class Player {
     static get TEAM_BLUE() {

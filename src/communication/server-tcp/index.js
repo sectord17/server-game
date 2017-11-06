@@ -1,7 +1,7 @@
 const ConnectionHandler = require('./connection-handler');
 const net = require('net');
 const debug = require('debug')('sectord17-game:server-tcp');
-const report = include('/lib/errors/reporter');
+const report = include('/src/errors/reporter');
 
 module.exports = exports = class ServerTCP {
     constructor(port) {
