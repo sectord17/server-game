@@ -5,8 +5,7 @@ module.exports.getValidEnv = key => {
     const value = process.env[key];
 
     if (!value) {
-        winston.log('error', `No value for env [${key}]`);
-        process.exit();
+        throw new Error(`No value for env [${key}]`);
     }
 
     return value;

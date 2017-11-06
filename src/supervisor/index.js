@@ -1,7 +1,6 @@
 const winston = require('winston');
 const moment = require('moment');
 const debug = require('debug')('sectord17-game:supervisor');
-const PlayerManager = require('../game/player-manager');
 
 const MAX_PLAYER_IDLE = 60 * 1000;
 const CHECK_IDLE_INTERVAL = 5 * 1000;
@@ -17,7 +16,7 @@ module.exports = exports = class Supervisor {
     }
 
     watch() {
-        setTimeout(this.checkForAnyPlayer.bind(this), PlayerManager.MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT + 1000);
+        setTimeout(this.checkForAnyPlayer.bind(this), this.playerManager.MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT + 1000);
         this.disconnectIdlePlayers();
     }
 

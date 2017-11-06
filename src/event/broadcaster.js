@@ -1,3 +1,5 @@
+const GameInProgressEvent = require('./events/GameInProgressEvent');
+
 module.exports = exports = class Brodcaster {
     constructor() {
         this.init();
@@ -12,8 +14,12 @@ module.exports = exports = class Brodcaster {
      * @param {Function} event
      */
     fire(event) {
-        this._getOrCreateEventListeners(event)
-            .forEach(listener => listener(event));
+        this.listeners
+            .forEach((listeners, eventClass) => {
+                if (event instanceof eventClass) {
+                    listeners.forEach(listener => listener(event))
+                }
+            });
     }
 
     /**

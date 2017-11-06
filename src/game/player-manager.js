@@ -8,14 +8,6 @@ const ModelNotFoundError = include('/src/errors/model-not-found-error');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
 module.exports = exports = class PlayerManager {
-    static get MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT() {
-        return 5 * 1000;
-    }
-
-    static get MAX_PLAYERS() {
-        return 8;
-    }
-
     /**
      * @param {GameManager} gameManager
      * @param {LifeManager} lifeManager
@@ -25,6 +17,9 @@ module.exports = exports = class PlayerManager {
      * @param {SlaveSDK} slaveSDK
      */
     constructor(gameManager, lifeManager, statsManager, lobby, sender, slaveSDK) {
+        this.MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT = 5 * 1000;
+        this.MAX_PLAYERS = 8 * 1000;
+
         this.gameManager = gameManager;
         this.lifeManager = lifeManager;
         this.statsManager = statsManager;
@@ -73,7 +68,7 @@ module.exports = exports = class PlayerManager {
 
         this.players.set(token, player);
 
-        setTimeout(() => this._deleteIfNotConnected(player), PlayerManager.MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT);
+        setTimeout(() => this._deleteIfNotConnected(player), this.MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT);
 
         return player;
     }
@@ -251,7 +246,7 @@ module.exports = exports = class PlayerManager {
     }
 
     _isFull() {
-        return this.connectedPlayers.size >= PlayerManager.MAX_PLAYERS;
+        return this.connectedPlayers.size >= this.MAX_PLAYERS;
     }
 
     _getUnoccupiedId() {
@@ -259,7 +254,7 @@ module.exports = exports = class PlayerManager {
             return null;
         }
 
-        for (let i = 1; i <= PlayerManager.MAX_PLAYERS; ++i) {
+        for (let i = 1; i <= this.MAX_PLAYERS; ++i) {
             if (!this.connectedPlayers.has(i)) {
                 return i;
             }

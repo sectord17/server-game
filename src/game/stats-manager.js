@@ -1,15 +1,15 @@
 const debug = require('debug')('sectord17-game:stats-manager');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
-const KILL_POINTS = 10;
-const POINTS_THRESHOLD = 100;
-
 module.exports = exports = class StatsManager {
     /**
      * @param {Sender} sender
      * @param {GameManager} gameManager
      */
     constructor(sender, gameManager) {
+        this.KILL_POINTS = 10;
+        this.POINTS_THRESHOLD = 100;
+
         this.sender = sender;
         this.gameManager = gameManager;
         this.init();
@@ -25,10 +25,10 @@ module.exports = exports = class StatsManager {
      * @param {Player} victim
      */
     onPlayerDeath(killer, victim) {
-        this._addPoints(killer, KILL_POINTS);
+        this._addPoints(killer, this.KILL_POINTS);
 
         const message = FlatBuffersHelper.gameData.pointsChangedData(
-            killer.id, KILL_POINTS, builder => FlatBuffersHelper.gameData.pointReasons.kill(builder, killer.id, victim.id)
+            killer.id, this.KILL_POINTS, builder => FlatBuffersHelper.gameData.pointReasons.kill(builder, killer.id, victim.id)
         );
 
         this.sender.toEveryPlayerViaTCP(message);
@@ -43,7 +43,7 @@ module.exports = exports = class StatsManager {
         const playerStat = this.players.get(player.id);
         playerStat.points += points;
 
-        if (playerStat.points >= POINTS_THRESHOLD) {
+        if (playerStat.points >= this.POINTS_THRESHOLD) {
             this.gameManager.gameFinish();
         }
     }

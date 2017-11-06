@@ -42,7 +42,7 @@ module.exports = exports = class MessageHandler {
             return this._onChangeTeam(roomMsg.data(new RoomAssets.Code.Remote.Flat.ChangeTeam()));
         }
 
-        debug("Unknown roommsg data type");
+        debug(`RoomMsg with invalid data type: [${dataType}] from player ${this.player.getInlineDetails()}`);
     }
 
     /**
@@ -69,13 +69,24 @@ module.exports = exports = class MessageHandler {
         }
 
         if (dataType === GameAssets.Code.Remote.Flat.Data.PlayerRespawnReqData) {
-            return this._onPlayerRespawnReqData(data);
+            return this._onPlayerRespawnReqData(gameData.data(new GameAssets.Code.Remote.Flat.PlayerRespawnReqData()));
         }
 
         if (dataType === GameAssets.Code.Remote.Flat.Data.HitReqData) {
-            return this._onHitReqData(data);
+            return this._onHitReqData(gameData.data(new GameAssets.Code.Remote.Flat.HitReqData()));
         }
 
+        if (dataType === GameAssets.Code.Remote.Flat.Data.HitReqData) {
+            return this._onShootData(message);
+        }
+
+        debug(`GameData with invalid data type: [${dataType}] from player ${this.player.getInlineDetails()}`);
+    }
+
+    /**
+     * @param {Uint8Array} message
+     */
+    _onShootData(message) {
         return this.sender.toEveryPlayerButOneViaTCP(this.player, Buffer.from(message));
     }
 

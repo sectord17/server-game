@@ -10,11 +10,9 @@ const IN_PROGRESS = 2;
 const FINISHED = 3;
 
 module.exports = exports = class GameManager {
-    static get TIME_FOR_GIVING_UP() {
-        return 5 * 1000;
-    }
-
     constructor(broadcaster) {
+        this.TIME_FOR_GIVING_UP = 5 * 1000;
+
         /** @type {Broadcaster} */
         this.broadcaster = broadcaster;
 

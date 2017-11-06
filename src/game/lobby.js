@@ -4,10 +4,10 @@ const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const Player = require('./player');
 const FlatbufferErrors = require('../errors/flatbuffer-errors');
 
-const MIN_PLAYERS_TO_START_GAME = 2;
-
 module.exports = exports = class Lobby {
     constructor() {
+        this.MIN_PLAYERS_TO_START_GAME = 2;
+
         this.init();
     }
 
@@ -145,7 +145,7 @@ module.exports = exports = class Lobby {
     _tryStartGame() {
         const playersDetails = Array.from(this.players.values());
 
-        if (this.playerManager.getConnectedPlayers() < MIN_PLAYERS_TO_START_GAME) {
+        if (this.playerManager.getConnectedPlayers() < this.MIN_PLAYERS_TO_START_GAME) {
             return false;
         }
 

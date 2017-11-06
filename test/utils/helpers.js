@@ -7,7 +7,7 @@ const RoomAssets = require('../../src/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../../src/flatbuffers/helper');
 const {broadcaster, gameManager, lifeManager, lobby, playerManager, shootManager, statsManager, serverTCP, serverUDP} = require('./src');
 const {prependLength, splitData} = require('../../src/communication/utils');
-const GameBootedEvent = require('../../src/event/events/GameBootedEvent');
+const GameInProgressEvent = require('../../src/event/events/GameInProgressEvent');
 const Buffer = require('buffer').Buffer;
 
 module.exports.beforeEach = function () {
@@ -87,10 +87,7 @@ module.exports.createPlayer = name => {
 };
 
 module.exports.startGame = players => new Promise(resolve => {
-    broadcaster.listen(GameBootedEvent, () => {
-        console.log('works');
-        resolve(players);
-    });
+    broadcaster.listen(GameInProgressEvent, () => resolve(players));
 
     const message = FlatBuffersHelper.roomMsg.meReady(true);
     const buffer = prependLength(message);

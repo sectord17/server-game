@@ -5,19 +5,14 @@ const ModelNotFoundError = require('../errors/model-not-found-error');
 const FlatbufferErrors = require('../errors/flatbuffer-errors');
 
 module.exports = exports = class LifeManager {
-    static get RESPAWN_COOLDOWN() {
-        return 5 * 1000;
-    }
-
-    static get MAX_HEALTH() {
-        return 100;
-    }
-
     /**
      * @param {Sender} sender
      * @param {StatsManager} statsManager
      */
     constructor(sender, statsManager) {
+        this.RESPAWN_COOLDOWN = 5 * 1000;
+        this.MAX_HEALTH = 100;
+
         this.sender = sender;
         this.statsManager = statsManager;
         this.init();
@@ -71,7 +66,7 @@ module.exports = exports = class LifeManager {
     respawnPlayer(player, x, y, z) {
         const playerLife = this.players.get(player.id);
 
-        if (moment() - playerLife.deathTime < LifeManager.RESPAWN_COOLDOWN) {
+        if (moment() - playerLife.deathTime < this.RESPAWN_COOLDOWN) {
             const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_RESPAWN);
             this.sender.toPlayerViaTCP(player, message);
             return;
@@ -79,7 +74,7 @@ module.exports = exports = class LifeManager {
 
         // TODO: Position validation
 
-        playerLife.health = LifeManager.MAX_HEALTH;
+        playerLife.health = this.MAX_HEALTH;
 
         const message = FlatBuffersHelper.gameData.playerRespawnAckData(player.id, x, y, z);
         this.sender.toEveryPlayerViaTCP(message);
@@ -113,7 +108,7 @@ module.exports = exports = class LifeManager {
         }
 
         this.players.set(player.id, {
-            health: LifeManager.MAX_HEALTH,
+            health: this.MAX_HEALTH,
             deathTime: null,
         });
     }

@@ -142,6 +142,25 @@ module.exports = {
         },
 
         /**
+         * @param {number} x
+         * @param {number} y
+         * @param {number} z
+         * @param {number} [senderId]
+         * @returns {Uint8Array}
+         */
+        playerRespawnReqData(x, y, z, senderId = 0) {
+            const builder = new flatbuffers.Builder(1024);
+
+            GameAssets.Code.Remote.Flat.PlayerRespawnReqData.startPlayerRespawnReqData(builder);
+            GameAssets.Code.Remote.Flat.PlayerRespawnReqData.addPosition(
+                builder, GameAssets.Code.Remote.Flat.Vec3.createVec3(builder, x, y, z)
+            );
+            const data = GameAssets.Code.Remote.Flat.PlayerRespawnReqData.endPlayerRespawnReqData(builder);
+
+            return this._wrap(builder, senderId, data, GameAssets.Code.Remote.Flat.Data.PlayerRespawnReqData);
+        },
+
+        /**
          * @param {int} playerId
          * @param {number} x
          * @param {number} y
@@ -158,7 +177,7 @@ module.exports = {
             );
             const data = GameAssets.Code.Remote.Flat.PlayerRespawnAckData.endPlayerRespawnAckData(builder);
 
-            return this._wrap(builder, 0, data, GameAssets.Code.Remote.Flat.Data.PlayerDeathData);
+            return this._wrap(builder, 0, data, GameAssets.Code.Remote.Flat.Data.PlayerRespawnAckData);
         },
 
         _wrap(builder, senderId, data, dataType) {
