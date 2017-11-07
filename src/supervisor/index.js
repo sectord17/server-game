@@ -39,7 +39,7 @@ module.exports = exports = class Supervisor {
         this.playerManager.getConnectedPlayers()
             .filter(player => player.lastActiveAt.valueOf() + MAX_PLAYER_IDLE < moment().valueOf())
             .forEach(player => {
-                winston.log('info', `Player ${player.getInlineDetails()} was idle longer than ${MAX_PLAYER_IDLE}ms`);
+                winston.log('info', `Player ${player.getInlineDetails()} was idle for longer than ${MAX_PLAYER_IDLE}ms`);
                 this.playerManager.disconnect(player)
             });
     }
