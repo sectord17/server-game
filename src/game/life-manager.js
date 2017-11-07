@@ -19,7 +19,7 @@ module.exports = exports = class LifeManager {
     }
 
     init() {
-        /** @type {Map.<int, {health: int, deathTime: [moment]}>} */
+        /** @type {Map.<int, {health: int, diedAt: [moment]}>} */
         this.players = new Map();
     }
 
@@ -29,23 +29,15 @@ module.exports = exports = class LifeManager {
      * @throws ModelNotFoundError
      */
     getHealth(player) {
-        const playerLife = this.players.get(player.id);
-
-        if (playerLife === undefined) {
-            throw new ModelNotFoundError('player-life', player.id);
-        }
-
-        return playerLife.health;
+        return this._getPlayerLife(player).health;
     }
 
-    getPlayerLife(player) {
-        const playerLife = this.players.get(player.id);
-
-        if (playerLife === undefined) {
-            throw new ModelNotFoundError('player-life', player.id);
-        }
-
-        return playerLife;
+    /**
+     * @param {Player} player
+     * @returns {moment}
+     */
+    getDiedAt(player) {
+        return this._getPlayerLife(player).diedAt;
     }
 
     /**
@@ -66,7 +58,7 @@ module.exports = exports = class LifeManager {
             return;
         }
 
-        const playerLife = this.getPlayerLife(victim);
+        const playerLife = this._getPlayerLife(victim);
         playerLife.health = Math.max(0, playerLife.health - damage);
 
         if (playerLife.get <= 0) {
@@ -81,9 +73,9 @@ module.exports = exports = class LifeManager {
      * @param {number} z
      */
     spawnPlayer(player, x, y, z) {
-        const playerLife = this.getPlayerLife(player);
+        const playerLife = this._getPlayerLife(player);
 
-        if (this.isAlive(player) || moment() - playerLife.deathTime < this.RESPAWN_COOLDOWN) {
+        if (this.isAlive(player) || moment() - playerLife.diedAt < this.RESPAWN_COOLDOWN) {
             const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_RESPAWN);
             this.sender.toPlayerViaTCP(player, message);
             return;
@@ -104,8 +96,8 @@ module.exports = exports = class LifeManager {
      * @param {Player} victim
      */
     onPlayerDeath(killer, victim) {
-        const playerLife = this.players.get(victim.id);
-        playerLife.deathTime = moment();
+        const playerLife = this._getPlayerLife(victim);
+        playerLife.diedAt = moment();
 
         this.statsManager.onPlayerDeath(killer, victim);
 
@@ -113,6 +105,16 @@ module.exports = exports = class LifeManager {
         this.sender.toEveryPlayerViaTCP(message);
 
         debug(`Player ${victim.getInlineDetails()} has died`);
+    }
+
+    _getPlayerLife(player) {
+        const playerLife = this.players.get(player.id);
+
+        if (playerLife === undefined) {
+            throw new ModelNotFoundError('player-life', player.id);
+        }
+
+        return playerLife;
     }
 
     /**
@@ -126,7 +128,7 @@ module.exports = exports = class LifeManager {
 
         this.players.set(player.id, {
             health: 0,
-            deathTime: null,
+            diedAt: null,
         });
     }
 

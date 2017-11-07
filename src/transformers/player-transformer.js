@@ -4,7 +4,9 @@ const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss:SSS";
  * @param {Player} player
  */
 module.exports = player => {
-    const {lobby} = include('/src');
+    const {lobby, lifeManager} = include('/src');
+
+    const diedAt = lifeManager.getDiedAt(player);
 
     let response = {
         id: player.id,
@@ -14,6 +16,10 @@ module.exports = player => {
         lobby: {
             joined: lobby.inLobby(player),
             ready: lobby.isReady(player)
+        },
+        life: {
+            health: lifeManager.getHealth(player),
+            diedAt: diedAt ? diedAt.format(DATE_FORMAT) : null,
         },
         decidedAt: player.decidedAt ? player.decidedAt.format(DATE_FORMAT) : null,
         authorizedAt: player.authorizedAt ? player.authorizedAt.format(DATE_FORMAT) : null,
