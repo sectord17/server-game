@@ -153,8 +153,6 @@ module.exports = exports = class Lobby {
             return false;
         }
 
-        winston.log('info', "Game started!");
-
         this.gameManager.gameStarting();
 
         return true;

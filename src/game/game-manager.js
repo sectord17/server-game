@@ -45,12 +45,16 @@ module.exports = exports = class GameManager {
             clearTimeout(this._timeoutGameInProgress);
             this._timeoutGameInProgress = null;
         }
+
+        winston.log('info', "Game is preparing...");
     }
 
     gameStarting() {
         this.status = STARTING;
         this._timeoutGameInProgress = setTimeout(this.gameInProgress.bind(this), GameManager.TIME_FOR_GIVING_UP);
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.Start);
+
+        winston.log('info', "Game is starting...");
     }
 
     gameInProgress() {
@@ -60,6 +64,8 @@ module.exports = exports = class GameManager {
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.InProgress);
 
         this.broadcaster.fire(new GameInProgressEvent());
+
+        winston.log('info', "Game has started!");
     }
 
     gameFinish() {
