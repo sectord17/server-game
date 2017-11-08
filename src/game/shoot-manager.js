@@ -17,6 +17,8 @@ module.exports = exports = class ShootManager {
 
         /** @type {Map.<int, Object>} */
         this.timeouts = new Map();
+
+        this.friendlyFire = false;
     }
 
     /**
@@ -27,6 +29,10 @@ module.exports = exports = class ShootManager {
      * @param {int} damage
      */
     voteForHit(voter, hitId, attacker, victim, damage) {
+        if (!this.friendlyFire && attacker.team === victim.team) {
+            return;
+        }
+
         const hitPoll = this._getOrCreateHitPoll(hitId);
         hitPoll.vote(voter, attacker, victim, damage);
 
