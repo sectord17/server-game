@@ -1,5 +1,6 @@
 const moment = require('moment');
 const RoomAssets = include('/src/flatbuffers/RoomSchema_generated').Assets;
+const InvalidArgumentError = require('../errors/invalid-argument-error');
 
 module.exports = exports = class Player {
     static get TEAM_BLUE() {
@@ -10,9 +11,8 @@ module.exports = exports = class Player {
         return RoomAssets.Code.Remote.Flat.Team.Red;
     }
 
-    constructor(token, team) {
+    constructor(token) {
         this.token = token;
-        this.team = team;
         this.decidedAt = moment();
         this.id = null;
         this.name = null;
@@ -41,6 +41,18 @@ module.exports = exports = class Player {
         this.connectedAt = moment();
     }
 
+    setTeam(team) {
+        if (team !== Player.TEAM_BLUE && team !== Player.TEAM_RED) {
+            throw new InvalidArgumentError();
+        }
+
+        this.team = team;
+    }
+
+    touch() {
+        this.lastActiveAt = moment();
+    }
+
     isDecided() {
         return this.token !== null;
     }
@@ -51,10 +63,6 @@ module.exports = exports = class Player {
 
     isConnected() {
         return this.id !== null;
-    }
-
-    touch() {
-        this.lastActiveAt = moment();
     }
 
     getInlineDetails() {

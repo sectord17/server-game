@@ -127,7 +127,7 @@ module.exports = exports = class Lobby {
         }
 
         debug(`Player ${player.getInlineDetails()} changed team from ${player.team} to ${team}.`);
-        player.team = team;
+        player.setTeam(team);
         this._informPlayersPlayerChangedTeam(player, team);
     }
 
@@ -200,7 +200,7 @@ module.exports = exports = class Lobby {
      */
     _informPlayersPlayerChangedReadyState(player, ready) {
         const message = FlatBuffersHelper.roomMsg.playerReady(player.id, ready);
-        this.sender.toEveryPlayerButOneViaTCP(player, message);
+        this.sender.toEveryPlayerViaTCP(message);
     }
 
     /**
@@ -212,6 +212,6 @@ module.exports = exports = class Lobby {
      */
     _informPlayersPlayerChangedTeam(player, team) {
         const message = FlatBuffersHelper.roomMsg.teamChanged(player.id, team);
-        this.sender.toEveryPlayerButOneViaTCP(player, message);
+        this.sender.toEveryPlayerViaTCP(message);
     }
 };

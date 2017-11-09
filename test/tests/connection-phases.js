@@ -55,6 +55,8 @@ describe('Connection to the game phases is that', function () {
         playerManager
             .authorize(player.token, name, {
                 close() {
+                },
+                send() {
                 }
             })
             .then(player => playerManager.connect(player.token, address, udpPort))

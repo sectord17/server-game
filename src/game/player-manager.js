@@ -63,9 +63,8 @@ module.exports = exports = class PlayerManager {
         }
 
         const token = uuidV4();
-        const team = this._chooseTeam();
-        const player = new Player(token, team);
 
+        const player = new Player(token);
         this.players.set(token, player);
 
         setTimeout(() => this._deleteIfNotConnected(player), this.MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT);
@@ -106,6 +105,23 @@ module.exports = exports = class PlayerManager {
      * @returns {Promise.<Player>}
      */
     connect(token, address, udpPort) {
+        return this._register(token, address, udpPort)
+            .then(player => {
+                const message = FlatBuffersHelper.udpReceived(player.id);
+                this.sender.toPlayerViaTCP(player, message);
+                this.lobby.addPlayer(player);
+
+                return player;
+            });
+    }
+
+    /**
+     * @param {string} token
+     * @param {string} address
+     * @param {int} udpPort
+     * @returns {Promise.<Player>}
+     */
+    _register(token, address, udpPort) {
         return new Promise((resolve, reject) => {
             const player = this.players.get(token);
             if (!player) {
@@ -125,8 +141,11 @@ module.exports = exports = class PlayerManager {
                 return reject(new ConnectingError("too_many_players", player));
             }
 
+            const team = this._chooseTeam();
+
             player.communicationHandler.assignAddress(address, udpPort);
             player.setConnected(id);
+            player.setTeam(team);
 
             this.connectedPlayers.set(player.id, player);
             this.lifeManager.addPlayer(player);
@@ -137,24 +156,6 @@ module.exports = exports = class PlayerManager {
 
             return resolve(player);
         });
-    }
-
-    /**
-     * @param {string} token
-     * @param {string} address
-     * @param {int} udpPort
-     * @returns {Promise.<Player>}
-     */
-    fullConnect(token, address, udpPort) {
-        return this.connect(token, address, udpPort)
-            .then(player => {
-                const message = FlatBuffersHelper.udpReceived(player.id);
-                this.sender.toPlayerViaTCP(player, message);
-
-                this.lobby.addPlayer(player);
-
-                return player;
-            });
     }
 
     /**
@@ -231,7 +232,7 @@ module.exports = exports = class PlayerManager {
             return Player.TEAM_BLUE;
         }
 
-        return Math.random() % 2;
+        return Math.floor(Math.random() * 2);
     }
 
     /**

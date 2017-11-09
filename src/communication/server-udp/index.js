@@ -70,7 +70,7 @@ module.exports = exports = class ServerUDP {
      */
     _onLoginMsg(loginMsg, rinfo) {
         this.playerManager
-            .fullConnect(loginMsg.token(), rinfo.address, rinfo.port)
+            .connect(loginMsg.token(), rinfo.address, rinfo.port)
             .catch(error => {
                 if (error instanceof ConnectingError) {
                     if (error.player) {
