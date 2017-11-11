@@ -304,10 +304,18 @@ Assets.Code.Remote.Flat.ShootData.prototype.shootId = function() {
 };
 
 /**
+ * @returns {number}
+ */
+Assets.Code.Remote.Flat.ShootData.prototype.shooterId = function() {
+  var offset = this.bb.__offset(this.bb_pos, 12);
+  return offset ? this.bb.readInt32(this.bb_pos + offset) : 0;
+};
+
+/**
  * @param {flatbuffers.Builder} builder
  */
 Assets.Code.Remote.Flat.ShootData.startShootData = function(builder) {
-  builder.startObject(4);
+  builder.startObject(5);
 };
 
 /**
@@ -340,6 +348,14 @@ Assets.Code.Remote.Flat.ShootData.addAlternate = function(builder, alternate) {
  */
 Assets.Code.Remote.Flat.ShootData.addShootId = function(builder, shootId) {
   builder.addFieldInt32(3, shootId, 0);
+};
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {number} shooterId
+ */
+Assets.Code.Remote.Flat.ShootData.addShooterId = function(builder, shooterId) {
+  builder.addFieldInt32(4, shooterId, 0);
 };
 
 /**
