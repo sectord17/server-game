@@ -1,13 +1,10 @@
 const debug = require('debug')('sectord17-game:lobby');
-const winston = require('winston');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const Player = require('./player');
 const FlatbufferErrors = require('../errors/flatbuffer-errors');
 
 module.exports = exports = class Lobby {
     constructor() {
-        this.MIN_PLAYERS_TO_START_GAME = 2;
-
         this.init();
     }
 
@@ -120,35 +117,17 @@ module.exports = exports = class Lobby {
      * @param {int} team
      */
     changeTeam(player, team) {
-        if (!this._canChangeTeam(team)) {
-            const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_CHANGE_TEAM);
-            this.sender.toPlayerViaTCP(player, message);
-            return;
-        }
+        const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_CHANGE_TEAM);
+        this.sender.toPlayerViaTCP(player, message);
 
-        debug(`Player ${player.getInlineDetails()} changed team from ${player.team} to ${team}.`);
         player.setTeam(team);
         this._informPlayersPlayerChangedTeam(player, team);
-    }
 
-    /**
-     * @param {int} team
-     * @returns {boolean}
-     */
-    _canChangeTeam(team) {
-        let blue = this.playerManager.getConnectedPlayers().filter(player => player.team === Player.TEAM_BLUE).length;
-        let red = this.playerManager.getConnectedPlayers().filter(player => player.team === Player.TEAM_RED).length;
-
-        return (team === Player.TEAM_RED && blue > red) || (team === Player.TEAM_BLUE && red > blue);
+        debug(`Player ${player.getInlineDetails()} changed team from ${player.team} to ${team}.`);
     }
 
     _tryStartGame() {
         const playersDetails = Array.from(this.players.values());
-
-        if (this.playerManager.getConnectedPlayers() < this.MIN_PLAYERS_TO_START_GAME) {
-            return false;
-        }
-
         if (!playersDetails.every(playerInfo => playerInfo.ready)) {
             return false;
         }
