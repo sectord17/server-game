@@ -1,7 +1,10 @@
 const {beforeEach, describe, it} = require('mocha');
+const flatbuffers = require('flatbuffers').flatbuffers;
+const GameAssets = require('../../src/flatbuffers/GameSchema_generated').Assets;
 const assert = require('assert');
 const {shootManager, lifeManager} = require('../utils/src');
 const {createLivePlayer, beforeEach: setupBeforeEach} = require('../utils/helpers');
+const {splitData} = require('../../src/communication/utils');
 
 describe('Hit poll', function () {
     beforeEach(setupBeforeEach);
@@ -16,8 +19,18 @@ describe('Hit poll', function () {
                 shootManager.voteForHit(connection2.player, 1, attacker, victim, 10);
                 shootManager.voteForHit(connection3.player, 1, attacker, victim, 11);
 
-                assert.equal(lifeManager.getHealth(victim), 90);
-                done();
+                connection1.clientTcp.on('data', data => splitData(data, data => {
+                    const message = new Uint8Array(data);
+                    const buf = new flatbuffers.ByteBuffer(message);
+
+                    if (GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
+                        const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
+                        if (gameData.dataType() === GameAssets.Code.Remote.Flat.Data.HitAckData) {
+                            assert.equal(lifeManager.getHealth(victim), 90);
+                            done();
+                        }
+                    }
+                }));
             })
             .catch(error => done(error));
     });
@@ -31,15 +44,48 @@ describe('Hit poll', function () {
                 shootManager.voteForHit(connection1.player, 2, attacker, victim, 10);
                 shootManager.voteForHit(connection2.player, 2, attacker, victim, 10);
 
-                setTimeout(function () {
-                    assert.equal(lifeManager.getHealth(victim), 90);
-                    done();
-                }, 0);
+                connection1.clientTcp.on('data', data => splitData(data, data => {
+                    const message = new Uint8Array(data);
+                    const buf = new flatbuffers.ByteBuffer(message);
+
+                    if (GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
+                        const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
+                        if (gameData.dataType() === GameAssets.Code.Remote.Flat.Data.HitAckData) {
+                            assert.equal(lifeManager.getHealth(victim), 90);
+                            done();
+                        }
+                    }
+                }));
             })
             .catch(error => done(error));
     });
 
-    it('does not take damage when less than 50% of player vote the same', function (done) {
+    it('kills victim when take 100hp or more', function (done) {
+        Promise.all([createLivePlayer(), createLivePlayer()])
+            .then(([connection1, connection2]) => {
+                const attacker = connection1.player;
+                const victim = connection2.player;
+
+                shootManager.voteForHit(connection1.player, 1, attacker, victim, 100);
+                shootManager.voteForHit(connection2.player, 1, attacker, victim, 100);
+
+                connection1.clientTcp.on('data', data => splitData(data, data => {
+                    const message = new Uint8Array(data);
+                    const buf = new flatbuffers.ByteBuffer(message);
+
+                    if (GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
+                        const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
+                        if (gameData.dataType() === GameAssets.Code.Remote.Flat.Data.PlayerDeathData) {
+                            assert.equal(lifeManager.isAlive(victim), false);
+                            done();
+                        }
+                    }
+                }));
+            })
+            .catch(error => done(error));
+    });
+
+    it('does not take damage when less than 50% of players vote the same', function (done) {
         Promise.all([createLivePlayer(), createLivePlayer(), createLivePlayer()])
             .then(([connection1, connection2, connection3]) => {
                 const attacker = connection1.player;
@@ -55,7 +101,7 @@ describe('Hit poll', function () {
             .catch(error => done(error));
     });
 
-    it('does not take damage when less than 50% of player vote', function (done) {
+    it('does not take damage when less than 50% of players vote', function (done) {
         Promise.all([createLivePlayer(), createLivePlayer(), createLivePlayer()])
             .then(([connection1, connection2]) => {
                 const attacker = connection1.player;

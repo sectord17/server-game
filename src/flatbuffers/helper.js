@@ -98,9 +98,9 @@ module.exports = {
          * @param reason
          * @returns {Uint8Array}
          */
-        pointsChangedData(playerId, points, reason) {
+        pointsChangedData(playerId, points, reasonCallback) {
             const builder = new flatbuffers.Builder(1024);
-            const reason = reason(builder);
+            const reason = reasonCallback(builder);
 
             GameAssets.Code.Remote.Flat.PointsChangedData.startPointsChangedData(builder);
             GameAssets.Code.Remote.Flat.PointsChangedData.addPlayerId(builder, playerId);
@@ -178,6 +178,22 @@ module.exports = {
             const data = GameAssets.Code.Remote.Flat.PlayerRespawnAckData.endPlayerRespawnAckData(builder);
 
             return this._wrap(builder, 0, data, GameAssets.Code.Remote.Flat.Data.PlayerRespawnAckData);
+        },
+
+        /**
+         * @param {int} playerId
+         * @param {int} damage
+         * @returns {Uint8Array}
+         */
+        hitAckData(playerId, damage) {
+            const builder = new flatbuffers.Builder(1024);
+
+            GameAssets.Code.Remote.Flat.HitAckData.startHitAckData(builder);
+            GameAssets.Code.Remote.Flat.HitAckData.addTargetId(builder, playerId);
+            GameAssets.Code.Remote.Flat.HitAckData.addDamage(builder, damage);
+            const data = GameAssets.Code.Remote.Flat.HitAckData.endHitAckData(builder);
+
+            return this._wrap(builder, 0, data, GameAssets.Code.Remote.Flat.Data.HitAckData);
         },
 
         _wrap(builder, senderId, data, dataType) {

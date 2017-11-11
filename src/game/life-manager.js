@@ -61,7 +61,10 @@ module.exports = exports = class LifeManager {
         const playerLife = this._getPlayerLife(victim);
         playerLife.health = Math.max(0, playerLife.health - damage);
 
-        if (playerLife.get <= 0) {
+        const message = FlatBuffersHelper.gameData.hitAckData(victim.id, damage);
+        this.sender.toEveryPlayerViaTCP(message);
+
+        if (playerLife.health <= 0) {
             this.onPlayerDeath(attacker, victim);
         }
     }
