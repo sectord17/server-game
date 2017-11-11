@@ -1,5 +1,3 @@
-const GameInProgressEvent = require('./events/GameInProgressEvent');
-
 module.exports = exports = class Brodcaster {
     constructor() {
         this.init();

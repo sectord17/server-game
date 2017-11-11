@@ -1,4 +1,3 @@
-const winston = require('winston');
 const dgram = require('dgram');
 const debug = require('debug')('sectord17-game:server-udp');
 const Buffer = require('buffer').Buffer;
@@ -42,8 +41,8 @@ module.exports = exports = class ServerUDP {
         }
 
         const communicationHandler = this.getCommuncationHandlerByRinfo(rinfo);
-        if (communicationHandler == null) {
-            winston.log('warn', `Message from unregistered user ${rinfo.address}:${rinfo.port}`);
+        if (communicationHandler === undefined) {
+            debug(`Message from unregistered connection ${rinfo.address}:${rinfo.port}`);
             return;
         }
 
@@ -55,13 +54,13 @@ module.exports = exports = class ServerUDP {
         this.server.send(buffer, 0, buffer.length, port, address);
     }
 
-    // TODO: Optimize it
     getCommuncationHandlerByRinfo(rinfo) {
         return this.playerManager
             .getConnectedPlayers()
             .map(player => player.communicationHandler)
-            .filter(communicationHandler => communicationHandler.address === rinfo.address && communicationHandler.udpPort === rinfo.port)
-            .find(() => true);
+            .find(communicationHandler =>
+                communicationHandler.address === rinfo.address && communicationHandler.udpPort === rinfo.port
+            );
     }
 
     /**

@@ -1,7 +1,7 @@
 const {beforeEach, describe, it} = require('mocha');
 const flatbuffers = require('flatbuffers').flatbuffers;
 const {playerManager} = require('../utils/src');
-const {createPlayer, startGame, beforeEach: setupBeforeEach} = require('../utils/helpers');
+const {createPlayer, beforeEach: setupBeforeEach} = require('../utils/helpers');
 const {prependLength, splitData} = require('../../src/communication/utils');
 const Player = require('../../src/game/player');
 const ErrorAssets = require('../../src/flatbuffers/ErrorSchema_generated').Assets;
@@ -11,13 +11,6 @@ const FlatbufferErrors = require('../../src/errors/flatbuffer-errors');
 
 describe('Player is in the lobby and', function () {
     beforeEach(setupBeforeEach);
-
-    it('sends meready and game starts', function (done) {
-        Promise.all([createPlayer(), createPlayer()])
-            .then(startGame)
-            .then(() => done())
-            .catch(error => done(error));
-    });
 
     it('always can change team', function (done) {
         Promise.all([createPlayer(), createPlayer()])
