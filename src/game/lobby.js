@@ -176,7 +176,7 @@ module.exports = exports = class Lobby {
      * @private
      */
     _informPlayersPlayerJoined(player) {
-        const message = FlatBuffersHelper.roomMsg.playerConnected(player.id, player.name);
+        const message = FlatBuffersHelper.roomMsg.playerConnected(player.id, player.name, player.team);
         this.sender.toEveryPlayerButOneViaTCP(player, message);
     }
 
