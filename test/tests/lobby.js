@@ -7,6 +7,7 @@ const Player = require('../../src/game/player');
 const ErrorAssets = require('../../src/flatbuffers/ErrorSchema_generated').Assets;
 const RoomAssets = require('../../src/flatbuffers/RoomSchema_generated').Assets;
 const FlatBuffersHelper = require('../../src/flatbuffers/helper');
+const FlatbufferErrors = require('../../src/errors/flatbuffer-errors');
 
 describe('Player is in the lobby and', function () {
     beforeEach(setupBeforeEach);
@@ -18,10 +19,11 @@ describe('Player is in the lobby and', function () {
             .catch(error => done(error));
     });
 
-    it('cannot change team when there are more or equal players in opposite team', function (done) {
+    it('always can change team', function (done) {
         Promise.all([createPlayer(), createPlayer()])
             .then(([connections1]) => {
                 const newTeam = connections1.player.team === Player.TEAM_BLUE ? Player.TEAM_RED : Player.TEAM_BLUE;
+
                 const message = FlatBuffersHelper.roomMsg.changeTeam(connections1.player.id, newTeam);
                 const buffer = prependLength(message);
                 connections1.clientTcp.write(buffer);
@@ -30,8 +32,33 @@ describe('Player is in the lobby and', function () {
                     const message = new Uint8Array(data);
                     const buf = new flatbuffers.ByteBuffer(message);
 
+                    if (RoomAssets.Code.Remote.Flat.RoomMsg.bufferHasIdentifier(buf)) {
+                        const roomMsg = RoomAssets.Code.Remote.Flat.RoomMsg.getRootAsRoomMsg(buf);
+                        if (roomMsg.dataType() === RoomAssets.Code.Remote.Flat.RoomData.TeamChanged) {
+                            done();
+                        }
+                    }
+                }));
+            })
+            .catch(error => done(error));
+    });
+
+    it('cannot send invalid team identifier', function (done) {
+        Promise.all([createPlayer(), createPlayer()])
+            .then(([connections1]) => {
+                const message = FlatBuffersHelper.roomMsg.changeTeam(connections1.player.id, 10);
+                const buffer = prependLength(message);
+                connections1.clientTcp.write(buffer);
+
+                connections1.clientTcp.on('data', data => splitData(data, data => {
+                    const message = new Uint8Array(data);
+                    const buf = new flatbuffers.ByteBuffer(message);
+
                     if (ErrorAssets.Code.Remote.Flat.ErrorMessage.bufferHasIdentifier(buf)) {
-                        done();
+                        const errorMessage = ErrorAssets.Code.Remote.Flat.ErrorMessage.getRootAsErrorMessage(buf);
+                        if (errorMessage.errorCode() === FlatbufferErrors.CANNOT_CHANGE_TEAM) {
+                            done();
+                        }
                     }
                 }));
             })

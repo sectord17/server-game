@@ -114,16 +114,26 @@ module.exports = exports = class Lobby {
 
     /**
      * @param {Player} player
-     * @param {int} team
+     * @param {RoomAssets.Code.Remote.Flat.Team} team
      */
     changeTeam(player, team) {
-        const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_CHANGE_TEAM);
-        this.sender.toPlayerViaTCP(player, message);
-
-        player.setTeam(team);
-        this._informPlayersPlayerChangedTeam(player, team);
+        if (!this._canChangeTeam(team)) {
+            const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_CHANGE_TEAM);
+            this.sender.toPlayerViaTCP(player, message);
+            return;
+        }
 
         debug(`Player ${player.getInlineDetails()} changed team from ${player.team} to ${team}.`);
+        player.setTeam(team);
+        this._informPlayersPlayerChangedTeam(player, team);
+    }
+
+    /**
+     * @param {RoomAssets.Code.Remote.Flat.Team} team
+     * @returns {boolean}
+     */
+    _canChangeTeam(team) {
+        return team === Player.TEAM_BLUE || team === Player.TEAM_RED;
     }
 
     _tryStartGame() {
