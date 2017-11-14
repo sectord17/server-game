@@ -27,9 +27,7 @@ module.exports = exports = class StatsManager {
     onPlayerDeath(killer, victim) {
         this._addPoints(killer, this.KILL_POINTS);
 
-        const message = FlatBuffersHelper.gameData.pointsChangedData(
-            killer.id, this.KILL_POINTS, builder => FlatBuffersHelper.gameData.pointReasons.kill(builder, killer.id, victim.id)
-        );
+        const message = FlatBuffersHelper.gameData.pointReasons.kill(killer.id, victim.id, this.KILL_POINTS);
 
         this.sender.toEveryPlayerViaTCP(message);
     }

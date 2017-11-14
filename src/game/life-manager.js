@@ -102,10 +102,10 @@ module.exports = exports = class LifeManager {
         const playerLife = this._getPlayerLife(victim);
         playerLife.diedAt = moment();
 
-        this.statsManager.onPlayerDeath(killer, victim);
-
         const message = FlatBuffersHelper.gameData.playerDeathData(victim.id);
         this.sender.toEveryPlayerViaTCP(message);
+
+        this.statsManager.onPlayerDeath(killer, victim);
 
         debug(`Player ${victim.getInlineDetails()} has died`);
     }

@@ -9,7 +9,7 @@ const prepareMessage = builder => {
     return builder.asUint8Array();
 };
 
-module.exports = {
+const helper = {
     /**
      * @param {string} name
      * @param {string} token
@@ -92,39 +92,34 @@ module.exports = {
             return this._wrap(builder, senderId, data, GameAssets.Code.Remote.Flat.Data.ShootData);
         },
 
-        /**
-         * @param {int} playerId
-         * @param {int} points
-         * @param reason
-         * @returns {Uint8Array}
-         */
-        pointsChangedData(playerId, points, reasonCallback) {
-            const builder = new flatbuffers.Builder(1024);
-            const reason = reasonCallback(builder);
-
-            GameAssets.Code.Remote.Flat.PointsChangedData.startPointsChangedData(builder);
-            GameAssets.Code.Remote.Flat.PointsChangedData.addPlayerId(builder, playerId);
-            GameAssets.Code.Remote.Flat.PointsChangedData.addPoints(builder, points);
-            GameAssets.Code.Remote.Flat.PointsChangedData.addReason(builder, reason);
-            const data = GameAssets.Code.Remote.Flat.PointsChangedData.endPointsChangedData(builder);
-
-            return this._wrap(builder, 0, data, GameAssets.Code.Remote.Flat.Data.PointsChangedData);
-        },
-
         pointReasons: {
             /**
-             * @param builder
              * @param {int} killerId
              * @param {int} targetId
+             * @param {int} points
              * @returns {flatbuffers.Offset}
              */
-            kill(builder, killerId, targetId) {
+            kill(killerId, targetId, points) {
+                const builder = new flatbuffers.Builder(1024);
+
                 GameAssets.Code.Remote.Flat.KillReason.startKillReason(builder);
                 GameAssets.Code.Remote.Flat.KillReason.addKillerId(builder, killerId);
                 GameAssets.Code.Remote.Flat.KillReason.addTargetId(builder, targetId);
+                const reason = GameAssets.Code.Remote.Flat.KillReason.endKillReason(builder);
 
-                return GameAssets.Code.Remote.Flat.KillReason.endKillReason(builder);
-            }
+                return this._wrap(builder, killerId, points, reason, GameAssets.Code.Remote.Flat.Reason.KillReason);
+            },
+
+            _wrap(builder, playerId, points, reason, reasonType) {
+                GameAssets.Code.Remote.Flat.PointsChangedData.startPointsChangedData(builder);
+                GameAssets.Code.Remote.Flat.PointsChangedData.addPlayerId(builder, playerId);
+                GameAssets.Code.Remote.Flat.PointsChangedData.addPoints(builder, points);
+                GameAssets.Code.Remote.Flat.PointsChangedData.addReason(builder, reason);
+                GameAssets.Code.Remote.Flat.PointsChangedData.addReasonType(builder, reasonType);
+                const data = GameAssets.Code.Remote.Flat.PointsChangedData.endPointsChangedData(builder);
+
+                return helper.gameData._wrap(builder, 0, data, GameAssets.Code.Remote.Flat.Data.PointsChangedData);
+            },
         },
 
         /**
@@ -366,3 +361,5 @@ module.exports = {
         }
     }
 };
+
+module.exports = helper;
