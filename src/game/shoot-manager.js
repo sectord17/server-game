@@ -1,13 +1,8 @@
 const HitPoll = require('./hit-poll');
 
 module.exports = exports = class ShootManager {
-    /**
-     * @param {PlayerManager} playerManager
-     */
-    constructor(playerManager) {
+    constructor() {
         this.HIT_POLL_DURATION = 50;
-
-        this.playerManager = playerManager;
         this.init();
     }
 
@@ -19,6 +14,11 @@ module.exports = exports = class ShootManager {
         this.timeouts = new Map();
 
         this.friendlyFire = false;
+    }
+
+    use(dependencies) {
+        /** @type {PlayerManager} */
+        this.playerManager = dependencies.playerManager;
     }
 
     /**

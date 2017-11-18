@@ -14,6 +14,7 @@ const ServerUDP = require('./communication/server-udp');
 const ServerHTTP = require('./communication/server-http');
 const ShootManager = require('./game/shoot-manager');
 const StatsManager = require('./game/stats-manager');
+const TeamManager = require('./game/team-manager');
 const SlaveSDK = require('./sdk/slave-sdk');
 const config = require('./config');
 
@@ -22,29 +23,27 @@ let httpPort = config.get('HTTP_PORT');
 
 const slaveSDK = new SlaveSDK();
 const broadcaster = new Broadcaster();
-const gameManager = new GameManager(broadcaster);
+const gameManager = new GameManager();
 const lobby = new Lobby();
 const sender = new Sender();
-const statsManager = new StatsManager(sender, gameManager);
-const lifeManager = new LifeManager(sender, statsManager);
-const playerManager = new PlayerManager(gameManager, lobby, sender, slaveSDK);
-const shootManager = new ShootManager(playerManager);
-const supervisor = new Supervisor(playerManager, gameManager);
+const statsManager = new StatsManager();
+const lifeManager = new LifeManager();
+const playerManager = new PlayerManager();
+const teamManager = new TeamManager();
+const shootManager = new ShootManager();
+const supervisor = new Supervisor();
 const serverTCP = new ServerTCP(gamePort);
-const serverUDP = new ServerUDP(playerManager, lobby, gamePort);
+const serverUDP = new ServerUDP(gamePort);
 const serverHTTP = new ServerHTTP(httpPort);
 
-gameManager.use({broadcaster, playerManager, sender, slaveSDK});
-lobby.use({gameManager, playerManager, sender});
-sender.use({playerManager});
-
-module.exports = exports = {
+const dependencies = {
     broadcaster,
     lifeManager,
     gameManager,
     playerManager,
     shootManager,
     statsManager,
+    teamManager,
     lobby,
     sender,
     serverTCP,
@@ -53,6 +52,19 @@ module.exports = exports = {
     slaveSDK,
     supervisor,
 };
+
+gameManager.use(dependencies);
+playerManager.use(dependencies);
+lifeManager.use(dependencies);
+statsManager.use(dependencies);
+teamManager.use(dependencies);
+shootManager.use(dependencies);
+supervisor.use(dependencies);
+lobby.use(dependencies);
+sender.use(dependencies);
+serverUDP.use(dependencies);
+
+module.exports = exports = dependencies;
 
 require('./cli');
 

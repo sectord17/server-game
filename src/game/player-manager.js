@@ -8,20 +8,9 @@ const ModelNotFoundError = include('/src/errors/model-not-found-error');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
 module.exports = exports = class PlayerManager {
-    /**
-     * @param {GameManager} gameManager
-     * @param {Lobby} lobby
-     * @param {Sender} sender
-     * @param {SlaveSDK} slaveSDK
-     */
-    constructor(gameManager, lobby, sender, slaveSDK) {
+    constructor() {
         this.MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT = 5 * 1000;
         this.MAX_PLAYERS = 8 * 1000;
-
-        this.gameManager = gameManager;
-        this.lobby = lobby;
-        this.sender = sender;
-        this.slaveSDK = slaveSDK;
         this.init();
     }
 
@@ -31,6 +20,23 @@ module.exports = exports = class PlayerManager {
 
         // Id => Player
         this.connectedPlayers = new Map();
+    }
+
+    use(dependencies) {
+        /** @type {GameManager} */
+        this.gameManager = dependencies.gameManager;
+
+        /** @type {TeamManager} */
+        this.teamManager = dependencies.teamManager;
+
+        /** @type {Lobby} */
+        this.lobby = dependencies.lobby;
+
+        /** @type {Sender} */
+        this.sender = dependencies.sender;
+
+        /** @type {SlaveSDK} */
+        this.slaveSDK = dependencies.slaveSDK;
     }
 
     /**
@@ -137,11 +143,9 @@ module.exports = exports = class PlayerManager {
                 return reject(new ConnectingError("too_many_players", player));
             }
 
-            const team = this._chooseTeam();
-
             player.communicationHandler.assignAddress(address, udpPort);
             player.setConnected(id);
-            player.setTeam(team);
+            this.teamManager.assignToTeam(player);
 
             this.connectedPlayers.set(player.id, player);
             this._onPlayersCountChanged();
@@ -204,27 +208,6 @@ module.exports = exports = class PlayerManager {
         }
 
         throw new ModelNotFoundError("player");
-    }
-
-    /**
-     * Selects a team for the new player. Always try to balance teams as much as possible.
-     *
-     * @returns {int}
-     * @private
-     */
-    _chooseTeam() {
-        let blue = this.getConnectedPlayers().filter(player => player.team === Player.TEAM_BLUE).length;
-        let red = this.getConnectedPlayers().filter(player => player.team === Player.TEAM_RED).length;
-
-        if (blue > red) {
-            return Player.TEAM_RED;
-        }
-
-        if (red > blue) {
-            return Player.TEAM_BLUE;
-        }
-
-        return Math.floor(Math.random() * 2);
     }
 
     /**

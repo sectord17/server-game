@@ -7,12 +7,18 @@ const LoginAssets = include('/src/flatbuffers/LoginSchema_generated').Assets;
 const ConnectingError = include('/src/errors/connecting-error');
 
 module.exports = exports = class ServerUDP {
-    constructor(playerManager, lobby, port) {
-        this.playerManager = playerManager;
-        this.lobby = lobby;
+    constructor(port) {
         this.address = '0.0.0.0';
         this.port = parseInt(port) || 0;
         this.server = null;
+    }
+
+    use(dependencies) {
+        /** @type {PlayerManager} */
+        this.playerManager = dependencies.playerManager;
+
+        /** @type {Lobby} */
+        this.lobby = dependencies.lobby;
     }
 
     start() {

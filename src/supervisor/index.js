@@ -3,16 +3,17 @@ const moment = require('moment');
 const debug = require('debug')('sectord17-game:supervisor');
 
 module.exports = exports = class Supervisor {
-    /**
-     * @param {PlayerManager} playerManager
-     * @param {GameManager} gameManager
-     */
-    constructor(playerManager, gameManager) {
+    constructor() {
         this.MAX_PLAYER_IDLE = 60 * 1000;
         this.CHECK_IDLE_INTERVAL = 5 * 1000;
+    }
 
-        this.playerManager = playerManager;
-        this.gameManager = gameManager;
+    use(dependencies) {
+        /** @type {PlayerManager} */
+        this.playerManager = dependencies.playerManager;
+
+        /** @type {GameManager} */
+        this.gameManager = dependencies.gameManager;
     }
 
     watch() {

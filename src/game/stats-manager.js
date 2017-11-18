@@ -2,16 +2,17 @@ const debug = require('debug')('sectord17-game:stats-manager');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
 module.exports = exports = class StatsManager {
-    /**
-     * @param {Sender} sender
-     * @param {GameManager} gameManager
-     */
-    constructor(sender, gameManager) {
+    constructor() {
         this.KILL_POINTS = 10;
         this.POINTS_THRESHOLD = 100;
+    }
 
-        this.sender = sender;
-        this.gameManager = gameManager;
+    use(dependencies) {
+        /** @type {GameManager} */
+        this.gameManager = dependencies.gameManager;
+
+        /** @type {Sender} */
+        this.sender = dependencies.sender;
     }
 
     /**

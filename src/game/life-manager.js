@@ -4,16 +4,17 @@ const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const FlatbufferErrors = require('../errors/flatbuffer-errors');
 
 module.exports = exports = class LifeManager {
-    /**
-     * @param {Sender} sender
-     * @param {StatsManager} statsManager
-     */
-    constructor(sender, statsManager) {
+    constructor() {
         this.RESPAWN_COOLDOWN = 5 * 1000;
         this.MAX_HEALTH = 100;
+    }
 
-        this.sender = sender;
-        this.statsManager = statsManager;
+    use(dependencies) {
+        /** @type {StatsManager} */
+        this.statsManager = dependencies.statsManager;
+
+        /** @type {Sender} */
+        this.sender = dependencies.sender;
     }
 
     /**
