@@ -11,7 +11,7 @@ describe('Checking for idle players', function () {
         Promise.all([createPlayer(), createPlayer()])
             .then(startGame)
             .then(([connections1]) => {
-                connections1.player.lastActiveAt = moment().subtract(1, 'minute');
+                connections1.player.setLastActiveAt(moment().subtract(61, 'seconds'));
                 supervisor.disconnectIdlePlayers();
 
                 assert.equal(playerManager.getConnectedPlayers().length, 1);
@@ -24,7 +24,7 @@ describe('Checking for idle players', function () {
         Promise.all([createPlayer(), createPlayer()])
             .then(startGame)
             .then(([connections1]) => {
-                connections1.player.lastActiveAt = moment().subtract(40, 'seconds');
+                connections1.player.setLastActiveAt(moment().subtract(40, 'seconds'));
                 supervisor.disconnectIdlePlayers();
 
                 assert.equal(playerManager.getConnectedPlayers().length, 2);

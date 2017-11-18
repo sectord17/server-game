@@ -1,12 +1,10 @@
-const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss:SSS";
+const {formatDateTime} = require('../utils');
 
 /**
  * @param {Player} player
  */
 module.exports = player => {
-    const {lobby, lifeManager} = include('/src');
-
-    const diedAt = lifeManager.getDiedAt(player);
+    const {lobby} = include('/src');
 
     let response = {
         id: player.id,
@@ -18,13 +16,13 @@ module.exports = player => {
             ready: lobby.isReady(player)
         },
         life: {
-            health: lifeManager.getHealth(player),
-            diedAt: diedAt ? diedAt.format(DATE_FORMAT) : null,
+            health: player.health,
+            diedAt: formatDateTime(player.diedAt),
         },
-        decidedAt: player.decidedAt ? player.decidedAt.format(DATE_FORMAT) : null,
-        authorizedAt: player.authorizedAt ? player.authorizedAt.format(DATE_FORMAT) : null,
-        connectedAt: player.connectedAt ? player.connectedAt.format(DATE_FORMAT) : null,
-        lastActiveAt: player.lastActiveAt.format(DATE_FORMAT)
+        decidedAt: formatDateTime(player.decidedAt),
+        authorizedAt: formatDateTime(player.authorizedAt),
+        connectedAt: formatDateTime(player.connectedAt),
+        lastActiveAt: formatDateTime(player.lastActiveAt)
     };
 
     if (player.communicationHandler) {

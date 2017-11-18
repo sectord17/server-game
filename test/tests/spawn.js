@@ -38,7 +38,7 @@ describe('Game is in progress and', function () {
         Promise.all([createPlayer(), createPlayer()])
             .then(startGame)
             .then(([connection1]) => {
-                lifeManager.players.get(connection1.player.id).diedAt = moment();
+                connection1.player.setDiedAt(moment());
 
                 const message = FlatBuffersHelper.gameData.playerRespawnReqData(1, 1, 1, connection1.player.id);
                 connection1.clientTcp.write(prependLength(message));

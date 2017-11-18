@@ -26,7 +26,7 @@ describe('Hit poll', function () {
                     if (GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
                         const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
                         if (gameData.dataType() === GameAssets.Code.Remote.Flat.Data.HitAckData) {
-                            assert.equal(lifeManager.getHealth(victim), 90);
+                            assert.equal(victim.health, 90);
                             done();
                         }
                     }
@@ -51,7 +51,7 @@ describe('Hit poll', function () {
                     if (GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
                         const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
                         if (gameData.dataType() === GameAssets.Code.Remote.Flat.Data.HitAckData) {
-                            assert.equal(lifeManager.getHealth(victim), 90);
+                            assert.equal(victim.health, 90);
                             done();
                         }
                     }
@@ -76,7 +76,7 @@ describe('Hit poll', function () {
                     if (GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
                         const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
                         if (gameData.dataType() === GameAssets.Code.Remote.Flat.Data.PlayerDeathData) {
-                            assert.equal(lifeManager.isAlive(victim), false);
+                            assert.equal(victim.isAlive(), false);
                             done();
                         }
                     }
@@ -95,7 +95,7 @@ describe('Hit poll', function () {
                 shootManager.voteForHit(connection2.player, 3, attacker, victim, 11);
                 shootManager.voteForHit(connection3.player, 3, attacker, victim, 12);
 
-                assert.equal(lifeManager.getHealth(victim), 100);
+                assert.equal(victim.health, 100);
                 done();
             })
             .catch(error => done(error));
@@ -110,7 +110,7 @@ describe('Hit poll', function () {
                 shootManager.voteForHit(connection1.player, 4, attacker, victim, 10);
 
                 setTimeout(function () {
-                    assert.equal(lifeManager.getHealth(victim), 100);
+                    assert.equal(victim.health, 100);
                     done();
                 }, 0);
             })
@@ -128,7 +128,7 @@ describe('Hit poll', function () {
                 shootManager.voteForHit(connection1.player, 5, attacker, victim, 10);
 
                 setTimeout(function () {
-                    assert.equal(lifeManager.getHealth(victim), 100);
+                    assert.equal(victim.health, 100);
                     done();
                 }, 0);
             })

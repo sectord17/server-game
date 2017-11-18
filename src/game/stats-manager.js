@@ -12,12 +12,6 @@ module.exports = exports = class StatsManager {
 
         this.sender = sender;
         this.gameManager = gameManager;
-        this.init();
-    }
-
-    init() {
-        /** @type {Map.<int, {points: int}>} */
-        this.players = new Map();
     }
 
     /**
@@ -28,7 +22,6 @@ module.exports = exports = class StatsManager {
         this._addPoints(killer, this.KILL_POINTS);
 
         const message = FlatBuffersHelper.gameData.pointReasons.kill(killer.id, victim.id, this.KILL_POINTS);
-
         this.sender.toEveryPlayerViaTCP(message);
     }
 
@@ -38,37 +31,10 @@ module.exports = exports = class StatsManager {
      * @private
      */
     _addPoints(player, points) {
-        const playerStat = this.players.get(player.id);
-        playerStat.points += points;
+        player.setPoints(player.points + points);
 
-        if (playerStat.points >= this.POINTS_THRESHOLD) {
+        if (player.points >= this.POINTS_THRESHOLD) {
             this.gameManager.gameFinish();
         }
-    }
-
-    /**
-     * @param {Player} player
-     */
-    addPlayer(player) {
-        if (this.players.has(player.id)) {
-            debug(`Player ${player.getInlineDetails()} is in the stats-manager so cannot be added.`);
-            return;
-        }
-
-        this.players.set(player.id, {
-            points: 0,
-        });
-    }
-
-    /**
-     * @param {Player} player
-     */
-    removePlayer(player) {
-        if (!this.players.has(player.id)) {
-            debug(`Player ${player.getInlineDetails()} is not in the stats-manager so cannot be removed.`);
-            return;
-        }
-
-        this.players.delete(player.id);
     }
 };

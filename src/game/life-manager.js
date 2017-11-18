@@ -1,7 +1,6 @@
 const moment = require('moment');
 const debug = require('debug')('sectord17-game:life-manager');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
-const ModelNotFoundError = require('../errors/model-not-found-error');
 const FlatbufferErrors = require('../errors/flatbuffer-errors');
 
 module.exports = exports = class LifeManager {
@@ -15,37 +14,6 @@ module.exports = exports = class LifeManager {
 
         this.sender = sender;
         this.statsManager = statsManager;
-        this.init();
-    }
-
-    init() {
-        /** @type {Map.<int, {health: int, diedAt: [moment]}>} */
-        this.players = new Map();
-    }
-
-    /**
-     * @param {Player} player
-     * @returns {int}
-     * @throws ModelNotFoundError
-     */
-    getHealth(player) {
-        return this._getPlayerLife(player).health;
-    }
-
-    /**
-     * @param {Player} player
-     * @returns {moment}
-     */
-    getDiedAt(player) {
-        return this._getPlayerLife(player).diedAt;
-    }
-
-    /**
-     * @param {Player} player
-     * @returns {boolean}
-     */
-    isAlive(player) {
-        return this.getHealth(player) > 0;
     }
 
     /**
@@ -54,17 +22,16 @@ module.exports = exports = class LifeManager {
      * @param {int} damage
      */
     takeDamage(attacker, victim, damage) {
-        if (!this.isAlive(victim) || !this.isAlive(attacker)) {
+        if (!victim.isAlive() || !attacker.isAlive()) {
             return;
         }
 
-        const playerLife = this._getPlayerLife(victim);
-        playerLife.health = Math.max(0, playerLife.health - damage);
+        victim.setHealth(Math.max(0, victim.health - damage));
 
         const message = FlatBuffersHelper.gameData.hitAckData(victim.id, damage);
         this.sender.toEveryPlayerViaTCP(message);
 
-        if (playerLife.health <= 0) {
+        if (victim.health <= 0) {
             this.onPlayerDeath(attacker, victim);
         }
     }
@@ -76,17 +43,14 @@ module.exports = exports = class LifeManager {
      * @param {number} z
      */
     spawnPlayer(player, x, y, z) {
-        const playerLife = this._getPlayerLife(player);
-
-        if (this.isAlive(player) || moment() - playerLife.diedAt < this.RESPAWN_COOLDOWN) {
+        if (!this._canRespawn(player)) {
             const message = FlatBuffersHelper.error(FlatbufferErrors.CANNOT_RESPAWN);
             this.sender.toPlayerViaTCP(player, message);
             return;
         }
 
         // TODO: Position validation
-
-        playerLife.health = this.MAX_HEALTH;
+        player.setHealth(this.MAX_HEALTH);
 
         const message = FlatBuffersHelper.gameData.playerRespawnAckData(player.id, x, y, z);
         this.sender.toEveryPlayerViaTCP(message);
@@ -94,13 +58,16 @@ module.exports = exports = class LifeManager {
         debug(`Player ${player.getInlineDetails()} has been respawned`);
     }
 
+    _canRespawn(player) {
+        return !player.isAlive() && moment() - player.diedAt >= this.RESPAWN_COOLDOWN;
+    }
+
     /**
      * @param {Player} killer
      * @param {Player} victim
      */
     onPlayerDeath(killer, victim) {
-        const playerLife = this._getPlayerLife(victim);
-        playerLife.diedAt = moment();
+        victim.setDiedAt(moment());
 
         const message = FlatBuffersHelper.gameData.playerDeathData(victim.id);
         this.sender.toEveryPlayerViaTCP(message);
@@ -108,42 +75,5 @@ module.exports = exports = class LifeManager {
         this.statsManager.onPlayerDeath(killer, victim);
 
         debug(`Player ${victim.getInlineDetails()} has died`);
-    }
-
-    _getPlayerLife(player) {
-        const playerLife = this.players.get(player.id);
-
-        if (playerLife === undefined) {
-            throw new ModelNotFoundError('player-life', player.id);
-        }
-
-        return playerLife;
-    }
-
-    /**
-     * @param {Player} player
-     */
-    addPlayer(player) {
-        if (this.players.has(player.id)) {
-            debug(`Player ${player.getInlineDetails()} is in the life-manager so cannot be added.`);
-            return;
-        }
-
-        this.players.set(player.id, {
-            health: 0,
-            diedAt: null,
-        });
-    }
-
-    /**
-     * @param {Player} player
-     */
-    removePlayer(player) {
-        if (!this.players.has(player.id)) {
-            debug(`Player ${player.getInlineDetails()} is not in the life-manager so cannot be removed.`);
-            return;
-        }
-
-        this.players.delete(player.id);
     }
 };

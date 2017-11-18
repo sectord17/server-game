@@ -10,6 +10,8 @@ const {prependLength, splitData} = require('../../src/communication/utils');
 const GameInProgressEvent = require('../../src/event/events/GameInProgressEvent');
 const Buffer = require('buffer').Buffer;
 
+require('unset-timeout');
+
 module.exports.beforeEach = function () {
     winston.level = 'warn';
 
@@ -24,11 +26,9 @@ module.exports.beforeEach = function () {
 
     broadcaster.init();
     gameManager.init();
-    lifeManager.init();
     lobby.init();
     playerManager.init();
     shootManager.init();
-    statsManager.init();
 };
 
 /**

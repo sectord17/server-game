@@ -10,19 +10,15 @@ const FlatBuffersHelper = include('/src/flatbuffers/helper');
 module.exports = exports = class PlayerManager {
     /**
      * @param {GameManager} gameManager
-     * @param {LifeManager} lifeManager
-     * @param {StatsManager} statsManager
      * @param {Lobby} lobby
      * @param {Sender} sender
      * @param {SlaveSDK} slaveSDK
      */
-    constructor(gameManager, lifeManager, statsManager, lobby, sender, slaveSDK) {
+    constructor(gameManager, lobby, sender, slaveSDK) {
         this.MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT = 5 * 1000;
         this.MAX_PLAYERS = 8 * 1000;
 
         this.gameManager = gameManager;
-        this.lifeManager = lifeManager;
-        this.statsManager = statsManager;
         this.lobby = lobby;
         this.sender = sender;
         this.slaveSDK = slaveSDK;
@@ -148,8 +144,6 @@ module.exports = exports = class PlayerManager {
             player.setTeam(team);
 
             this.connectedPlayers.set(player.id, player);
-            this.lifeManager.addPlayer(player);
-            this.statsManager.addPlayer(player);
             this._onPlayersCountChanged();
 
             winston.log('info', `Player ${player.getInlineDetails()} connected`);
@@ -172,8 +166,6 @@ module.exports = exports = class PlayerManager {
             this.connectedPlayers.delete(player.id);
 
             this.lobby.removePlayer(player);
-            this.lifeManager.removePlayer(player);
-            this.statsManager.removePlayer(player);
 
             this._onPlayersCountChanged();
         }

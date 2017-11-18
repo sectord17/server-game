@@ -51,8 +51,8 @@ module.exports = exports = class GameManager {
 
     gameStarting() {
         this.status = STARTING;
-        this._timeoutGameInProgress = setTimeout(this.gameInProgress.bind(this), GameManager.TIME_FOR_GIVING_UP);
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.Start);
+        this._timeoutGameInProgress = setTimeout(this.gameInProgress.bind(this), this.TIME_FOR_GIVING_UP);
 
         winston.log('info', "Game is starting...");
     }

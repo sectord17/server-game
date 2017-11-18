@@ -12,15 +12,70 @@ module.exports = exports = class Player {
     }
 
     constructor(token) {
-        this.token = token;
-        this.decidedAt = moment();
-        this.id = null;
-        this.name = null;
-        this.authorizedAt = null;
-        this.connectedAt = null;
-        this.lastActiveAt = moment();
+        this._token = token;
+        this._id = null;
+        this._name = null;
+        this._decidedAt = moment();
+        this._authorizedAt = null;
+        this._connectedAt = null;
+        this._lastActiveAt = moment();
+
+        // Team
+        this._team = null;
+
+        // Stats
+        this._points = 0;
+
+        // Life
+        this._health = 0;
+        this._diedAt = null;
+
         /** @type {CommunicationHandler} */
         this.communicationHandler = null;
+    }
+
+    get diedAt() {
+        return this._diedAt;
+    }
+
+    get health() {
+        return this._health;
+    }
+
+    get points() {
+        return this._points;
+    }
+
+    get team() {
+        return this._team;
+    }
+
+    get lastActiveAt() {
+        return this._lastActiveAt;
+    }
+
+    get connectedAt() {
+        return this._connectedAt;
+    }
+
+    get authorizedAt() {
+        return this._authorizedAt;
+    }
+
+    get decidedAt() {
+        return this._decidedAt;
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    get token() {
+        return this._token;
     }
 
     /**
@@ -28,17 +83,17 @@ module.exports = exports = class Player {
      * @param {CommunicationHandler} communicationHandler
      */
     setAuthorized(name, communicationHandler) {
-        this.name = name;
+        this._name = name;
+        this._authorizedAt = moment();
         this.communicationHandler = communicationHandler;
-        this.authorizedAt = moment();
     }
 
     /**
      * @param {int} id
      */
     setConnected(id) {
-        this.id = id;
-        this.connectedAt = moment();
+        this._id = id;
+        this._connectedAt = moment();
     }
 
     setTeam(team) {
@@ -46,11 +101,31 @@ module.exports = exports = class Player {
             throw new InvalidArgumentError();
         }
 
-        this.team = team;
+        this._team = team;
+    }
+
+    setHealth(health) {
+        if (health < 0) {
+            throw new InvalidArgumentError();
+        }
+
+        this._health = health;
+    }
+
+    setDiedAt(date) {
+        this._diedAt = date;
+    }
+
+    setPoints(points) {
+        this._points = points;
+    }
+
+    setLastActiveAt(date) {
+        this._lastActiveAt = date;
     }
 
     touch() {
-        this.lastActiveAt = moment();
+        this.setLastActiveAt(moment());
     }
 
     isDecided() {
@@ -63,6 +138,10 @@ module.exports = exports = class Player {
 
     isConnected() {
         return this.id !== null;
+    }
+
+    isAlive() {
+        return this.health > 0;
     }
 
     getInlineDetails() {
