@@ -137,13 +137,13 @@ const helper = {
         },
 
         /**
+         * @param {number} playerId
          * @param {number} x
          * @param {number} y
          * @param {number} z
-         * @param {number} [senderId]
          * @returns {Uint8Array}
          */
-        playerRespawnReqData(x, y, z, senderId = 0) {
+        playerRespawnReqData(playerId, x, y, z) {
             const builder = new flatbuffers.Builder(1024);
 
             GameAssets.Code.Remote.Flat.PlayerRespawnReqData.startPlayerRespawnReqData(builder);
@@ -152,7 +152,7 @@ const helper = {
             );
             const data = GameAssets.Code.Remote.Flat.PlayerRespawnReqData.endPlayerRespawnReqData(builder);
 
-            return this._wrap(builder, senderId, data, GameAssets.Code.Remote.Flat.Data.PlayerRespawnReqData);
+            return this._wrap(builder, playerId, data, GameAssets.Code.Remote.Flat.Data.PlayerRespawnReqData);
         },
 
         /**
