@@ -362,4 +362,4 @@ const helper = {
     }
 };
 
-module.exports = helper;
+module.exports = exports = helper;

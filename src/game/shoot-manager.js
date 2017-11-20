@@ -1,6 +1,6 @@
 const HitPoll = require('./hit-poll');
 
-module.exports = exports = class ShootManager {
+class ShootManager {
     constructor() {
         this.HIT_POLL_DURATION = 50;
         this.init();
@@ -85,4 +85,6 @@ module.exports = exports = class ShootManager {
         this.hitPolls.delete(hitPoll.hitId);
         this.timeouts.delete(hitPoll.hitId);
     }
-};
+}
+
+module.exports = exports = ShootManager;

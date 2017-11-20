@@ -9,7 +9,7 @@ const STARTING = 1;
 const IN_PROGRESS = 2;
 const FINISHED = 3;
 
-module.exports = exports = class GameManager {
+class GameManager {
     constructor() {
         this.TIME_FOR_GIVING_UP = 5 * 1000;
         this.init();
@@ -92,4 +92,6 @@ module.exports = exports = class GameManager {
     _markPlayersAsActive() {
         this.playerManager.getConnectedPlayers().forEach(player => player.touch());
     }
-};
+}
+
+module.exports = exports = GameManager;

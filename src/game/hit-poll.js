@@ -2,7 +2,7 @@ const debug = require('debug')('sectord17-game:hit-poll');
 
 const MIN_RATIO = 0.5;
 
-module.exports = exports = class HitPoll {
+class HitPoll {
     /**
      * @param {int} hitId
      */
@@ -78,4 +78,6 @@ module.exports = exports = class HitPoll {
         debug(`Vote for #${this.hitId} hit failed [${maxOccurences}/${minVotesCount}]`);
         return false;
     }
-};
+}
+
+module.exports = exports = HitPoll;

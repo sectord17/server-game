@@ -1,2 +1,5 @@
-module.exports = exports = class GameInProgressEvent {
-};
+class GameInProgressEvent {
+    //
+}
+
+module.exports = exports = GameInProgressEvent;

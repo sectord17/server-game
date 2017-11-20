@@ -5,7 +5,7 @@ const report = include('/src/errors/reporter');
 const ConnectingError = include('/src/errors/connecting-error');
 const {prependLength, splitData} = require('../utils');
 
-module.exports = exports = class ConnectionHandler {
+class ConnectionHandler {
     constructor(socket) {
         const {playerManager} = include('/src');
 
@@ -80,4 +80,6 @@ module.exports = exports = class ConnectionHandler {
                 report(error);
             });
     }
-};
+}
+
+module.exports = exports = ConnectionHandler;

@@ -1,4 +1,4 @@
-module.exports = exports = class SlaveSDK {
+class SlaveSDK {
     playersCountChanged(count) {
         this._send('players-count-changed', {
             playersCount: count
@@ -10,10 +10,12 @@ module.exports = exports = class SlaveSDK {
     }
 
     _send(event, data) {
-        if (typeof process.send === 'undefined') {
+        if (process.send === undefined) {
             return;
         }
 
         process.send({event, data});
     }
-};
+}
+
+module.exports = exports = SlaveSDK;

@@ -1,4 +1,4 @@
-module.exports = exports = class Sender {
+class Sender {
     use(dependencies) {
         /** @type {PlayerManager} */
         this.playerManager = dependencies.playerManager;
@@ -41,4 +41,6 @@ module.exports = exports = class Sender {
             .getConnectedPlayers()
             .filter(playerCompared => playerCompared.id !== player.id);
     }
-};
+}
+
+module.exports = exports = Sender;

@@ -3,7 +3,7 @@ const GameAssets = include('/src/flatbuffers/GameSchema_generated').Assets;
 const RoomAssets = include('/src/flatbuffers/RoomSchema_generated').Assets;
 const MessageHandler = require('./message-handler');
 
-module.exports = class CommunicationHandler {
+class CommunicationHandler {
     /**
      * @param {Player} player
      * @param {ConnectionHandler} connectionHandler
@@ -64,4 +64,6 @@ module.exports = class CommunicationHandler {
     sendViaTcp(message) {
         this.connectionHandler.send(message);
     }
-};
+}
+
+module.exports = exports = CommunicationHandler;

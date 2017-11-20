@@ -3,7 +3,7 @@ const debug = require('debug')('sectord17-game:life-manager');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const FlatbufferErrors = require('../errors/flatbuffer-errors');
 
-module.exports = exports = class LifeManager {
+class LifeManager {
     constructor() {
         this.RESPAWN_COOLDOWN = 5 * 1000;
         this.MAX_HEALTH = 100;
@@ -77,4 +77,6 @@ module.exports = exports = class LifeManager {
 
         debug(`Player ${victim.getInlineDetails()} has died`);
     }
-};
+}
+
+module.exports = exports = LifeManager;

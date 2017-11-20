@@ -1,6 +1,6 @@
 const Player = require('./player');
 
-module.exports = exports = class TeamManager {
+class TeamManager {
     use(dependencies) {
         /** @type {PlayerManager} */
         this.playerManager = dependencies.playerManager;
@@ -35,4 +35,6 @@ module.exports = exports = class TeamManager {
 
         return Math.floor(Math.random() * 2);
     }
-};
+}
+
+module.exports = exports = TeamManager;

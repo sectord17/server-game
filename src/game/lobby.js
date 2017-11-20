@@ -3,7 +3,7 @@ const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const Player = require('./player');
 const FlatbufferErrors = require('../errors/flatbuffer-errors');
 
-module.exports = exports = class Lobby {
+class Lobby {
     constructor() {
         this.init();
     }
@@ -203,4 +203,6 @@ module.exports = exports = class Lobby {
         const message = FlatBuffersHelper.roomMsg.teamChanged(player.id, team);
         this.sender.toEveryPlayerViaTCP(message);
     }
-};
+}
+
+module.exports = exports = Lobby;

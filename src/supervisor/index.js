@@ -2,7 +2,7 @@ const winston = require('winston');
 const moment = require('moment');
 const debug = require('debug')('sectord17-game:supervisor');
 
-module.exports = exports = class Supervisor {
+class Supervisor {
     constructor() {
         this.MAX_PLAYER_IDLE = 60 * 1000;
         this.CHECK_IDLE_INTERVAL = 5 * 1000;
@@ -51,4 +51,6 @@ module.exports = exports = class Supervisor {
     _isPlayerIdle(player) {
         return player.lastActiveAt.valueOf() + this.MAX_PLAYER_IDLE < moment().valueOf();
     }
-};
+}
+
+module.exports = exports = Supervisor;

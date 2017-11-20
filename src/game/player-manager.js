@@ -7,7 +7,7 @@ const ConnectingError = include('/src/errors/connecting-error');
 const ModelNotFoundError = include('/src/errors/model-not-found-error');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
-module.exports = exports = class PlayerManager {
+class PlayerManager {
     constructor() {
         this.MAX_DELAY_BETWEEN_DECIDE_AND_CONNECT = 5 * 1000;
         this.MAX_PLAYERS = 8 * 1000;
@@ -248,4 +248,6 @@ module.exports = exports = class PlayerManager {
     _onPlayersCountChanged() {
         this.slaveSDK.playersCountChanged(this.connectedPlayers.size);
     }
-};
+}
+
+module.exports = exports = PlayerManager;

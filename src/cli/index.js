@@ -21,4 +21,4 @@ rl.on('line', (input) => {
     }
 });
 
-module.exports = rl;
+module.exports = exports = rl;

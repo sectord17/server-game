@@ -1,3 +1,5 @@
-module.exports = class EndpointNotFoundError {
+class EndpointNotFoundError {
     //
-};
+}
+
+module.exports = exports = EndpointNotFoundError;

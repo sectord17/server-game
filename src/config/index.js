@@ -1,6 +1,6 @@
 const {getValidEnv} = require('../utils');
 
-module.exports = {
+module.exports = exports = {
     custom: {},
 
     get(key) {

@@ -9,7 +9,7 @@ const ConnectingError = include('/src/errors/connecting-error');
 const ModelNotFoundError = include('/src/errors/model-not-found-error');
 const EndpointNotFoundError = include('/src/errors/endpoint-not-found-error');
 
-module.exports = exports = class ServerHTTP {
+class ServerHTTP {
     constructor(port) {
         this.app = null;
         this.server = null;
@@ -67,4 +67,6 @@ module.exports = exports = class ServerHTTP {
 
         return server;
     }
-};
+}
+
+module.exports = exports = ServerHTTP;

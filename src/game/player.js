@@ -2,7 +2,7 @@ const moment = require('moment');
 const RoomAssets = include('/src/flatbuffers/RoomSchema_generated').Assets;
 const InvalidArgumentError = require('../errors/invalid-argument-error');
 
-module.exports = exports = class Player {
+class Player {
     static get TEAM_BLUE() {
         return RoomAssets.Code.Remote.Flat.Team.Blue;
     }
@@ -158,4 +158,6 @@ module.exports = exports = class Player {
         // [asdasfasfasf]
         return `[${this.token}]`;
     }
-};
+}
+
+module.exports = exports = Player;

@@ -5,4 +5,4 @@ config.set('GAME_PORT', '0');
 config.set('HTTP_PORT', '0');
 config.set('TOKEN', 'secret');
 
-module.exports = require('../../src');
+module.exports = exports = require('../../src');

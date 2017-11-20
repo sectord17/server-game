@@ -1,4 +1,4 @@
-module.exports = exports = class Brodcaster {
+class Brodcaster {
     constructor() {
         this.init();
     }
@@ -9,7 +9,7 @@ module.exports = exports = class Brodcaster {
     }
 
     /**
-     * @param {Function} event
+     * @param {Object} event
      */
     fire(event) {
         this.listeners
@@ -50,4 +50,6 @@ module.exports = exports = class Brodcaster {
 
         return this.listeners.get(event);
     }
-};
+}
+
+module.exports = exports = Brodcaster;

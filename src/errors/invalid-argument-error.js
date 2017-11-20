@@ -1,3 +1,5 @@
-module.exports = class InvalidArgumentError extends Error {
+class InvalidArgumentError extends Error {
     //
-};
+}
+
+module.exports = exports = InvalidArgumentError;

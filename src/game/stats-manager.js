@@ -1,7 +1,7 @@
 const debug = require('debug')('sectord17-game:stats-manager');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
-module.exports = exports = class StatsManager {
+class StatsManager {
     constructor() {
         this.KILL_POINTS = 10;
         this.POINTS_THRESHOLD = 100;
@@ -38,4 +38,6 @@ module.exports = exports = class StatsManager {
             this.gameManager.gameFinish();
         }
     }
-};
+}
+
+module.exports = exports = StatsManager;

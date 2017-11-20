@@ -6,7 +6,7 @@ const flatbuffers = require('flatbuffers').flatbuffers;
 const LoginAssets = include('/src/flatbuffers/LoginSchema_generated').Assets;
 const ConnectingError = include('/src/errors/connecting-error');
 
-module.exports = exports = class ServerUDP {
+class ServerUDP {
     constructor(port) {
         this.address = '0.0.0.0';
         this.port = parseInt(port) || 0;
@@ -89,4 +89,6 @@ module.exports = exports = class ServerUDP {
                 report(error);
             });
     }
-};
+}
+
+module.exports = exports = ServerUDP;

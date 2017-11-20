@@ -3,7 +3,7 @@ const RoomAssets = include('/src/flatbuffers/RoomSchema_generated').Assets;
 const Buffer = require('buffer').Buffer;
 const debug = require('debug')('sectord17-game:message-handler');
 
-module.exports = exports = class MessageHandler {
+class MessageHandler {
     /**
      * @param {Player} player
      */
@@ -129,4 +129,6 @@ module.exports = exports = class MessageHandler {
 
         this.shootManager.voteForHit(this.player, data.hitId(), attacker, victim, data.damage());
     }
-};
+}
+
+module.exports = exports = MessageHandler;

@@ -3,7 +3,7 @@ const net = require('net');
 const debug = require('debug')('sectord17-game:server-tcp');
 const report = include('/src/errors/reporter');
 
-module.exports = exports = class ServerTCP {
+class ServerTCP {
     constructor(port) {
         this.address = '0.0.0.0';
         this.port = parseInt(port) || 0;
@@ -26,4 +26,6 @@ module.exports = exports = class ServerTCP {
 
         this.server = server;
     }
-};
+}
+
+module.exports = exports = ServerTCP;

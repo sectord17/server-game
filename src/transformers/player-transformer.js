@@ -3,7 +3,7 @@ const {formatDateTime} = require('../utils');
 /**
  * @param {Player} player
  */
-module.exports = player => {
+module.exports = exports = player => {
     const {lobby} = include('/src');
 
     let response = {
