@@ -8,7 +8,7 @@ class MessageHandler {
      * @param {Player} player
      */
     constructor(player) {
-        const {playerManager, lifeManager, shootManager, lobby, sender} = include('/src');
+        const {playerManager, lifeManager, shootManager, gameManager, lobby, sender} = include('/src');
 
         /** @type {PlayerManager} */
         this.playerManager = playerManager;
@@ -18,6 +18,9 @@ class MessageHandler {
 
         /** @type {ShootManager} */
         this.shootManager = shootManager;
+
+        /** @type {GameManager} */
+        this.gameManager = gameManager;
 
         /** @type {Lobby} */
         this.lobby = lobby;
@@ -80,13 +83,18 @@ class MessageHandler {
             return this._onShootData(message);
         }
 
-        debug(`GameData with invalid data type: [${dataType}] from player ${this.player.getInlineDetails()}`);
+        debug(`GameData with invalid data type: [${dataType}]. From player ${this.player.getInlineDetails()}`);
     }
 
     /**
      * @param {Uint8Array} message
      */
     _onShootData(message) {
+        if (!this.player.isAlive()) {
+            debug(`ShootData when player is not alive. From player: ${this.player.getInlineDetails()}`);
+            return;
+        }
+
         return this.sender.toEveryPlayerButOneViaTCP(this.player, Buffer.from(message));
     }
 
@@ -94,6 +102,11 @@ class MessageHandler {
      * @param {Assets.Code.Remote.Flat.MeReady} data
      */
     _onMeReady(data) {
+        if (this.gameManager.isInProgress()) {
+            debug(`MeReady when game is in progress. From player: ${this.player.getInlineDetails()}`);
+            return;
+        }
+
         this.lobby.changeReady(this.player, data.isReady());
     }
 
@@ -101,10 +114,20 @@ class MessageHandler {
      * @param {Assets.Code.Remote.Flat.ChangeTeam} data
      */
     _onChangeTeam(data) {
+        if (this.gameManager.isInProgress()) {
+            debug(`ChangeTeam when game is in progress. From player: ${this.player.getInlineDetails()}`);
+            return;
+        }
+
         this.lobby.changeTeam(this.player, data.team());
     }
 
     _onPlayerData(message) {
+        if (!this.player.isAlive()) {
+            debug(`PlayerData when player is not alive. From player: ${this.player.getInlineDetails()}`);
+            return;
+        }
+
         this.sender.toEveryPlayerButOneViaUDP(this.player, Buffer.from(message));
     }
 
@@ -112,6 +135,11 @@ class MessageHandler {
      * @param {Assets.Code.Remote.Flat.PlayerRespawnReqData} data
      */
     _onPlayerRespawnReqData(data) {
+        if (this.player.isAlive()) {
+            debug(`PlayerRespawnReqData when player is alive. From player: ${this.player.getInlineDetails()}`);
+            return;
+        }
+
         const position = data.position();
         this.lifeManager.spawnPlayer(this.player, position.x(), position.y(), position.z());
     }
@@ -124,6 +152,7 @@ class MessageHandler {
         const victim = this.playerManager.getConnectedPlayer(data.targetId());
 
         if (attacker === undefined || victim === undefined) {
+            debug(`Attacker or victim does not exist in HitReqData. From player: ${this.player.getInlineDetails()}`);
             return;
         }
 

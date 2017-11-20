@@ -3,7 +3,7 @@ const LoginAssets = include('/src/flatbuffers/LoginSchema_generated').Assets;
 const debug = require('debug')('sectord17-game:connection-handler');
 const report = include('/src/errors/reporter');
 const ConnectingError = include('/src/errors/connecting-error');
-const {prependLength, splitData} = require('../utils');
+const {prependLength, splitData} = require('./utils');
 
 class ConnectionHandler {
     constructor(socket) {

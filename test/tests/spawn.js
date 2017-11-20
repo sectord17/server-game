@@ -3,7 +3,7 @@ const moment = require('moment');
 const {beforeEach, describe, it} = require('mocha');
 const flatbuffers = require('flatbuffers').flatbuffers;
 const {createPlayer, startGame, beforeEach: setupBeforeEach} = require('../utils/helpers');
-require('../../src');
+const {lifeManager} = require('../../src');
 const {prependLength, splitData} = require('../../src/communication/utils');
 const GameAssets = require('../../src/flatbuffers/GameSchema_generated').Assets;
 const ErrorAssets = require('../../src/flatbuffers/ErrorSchema_generated').Assets;
@@ -16,15 +16,12 @@ describe('Game is in progress and', function () {
     it('spawns properly', function (done) {
         Promise.all([createPlayer(), createPlayer()])
             .then(startGame)
-            .then(([connection1, connection2]) => {
+            .then(([pack1, pack2]) => {
                 const x = 100;
                 const y = -10;
                 const z = 0;
 
-                const message = FlatBuffersHelper.gameData.playerRespawnReqData(connection1.player.id, x, y, z);
-                connection1.clientTcp.write(prependLength(message));
-
-                connection2.clientTcp.on('data', data => splitData(data, data => {
+                pack1.clientTcp.on('data', data => splitData(data, data => {
                     const message = new Uint8Array(data);
                     const buf = new flatbuffers.ByteBuffer(message);
 
@@ -36,12 +33,17 @@ describe('Game is in progress and', function () {
                             assert.equal(position.x(), x);
                             assert.equal(position.y(), y);
                             assert.equal(position.z(), z);
-                            assert.equal(playerRespawnAck.playerId(), connection1.player.id);
-
+                            assert.equal(playerRespawnAck.playerId(), pack1.player.id);
                             done();
                         }
                     }
                 }));
+
+                lifeManager.takeDamage(pack2.player, pack1.player, 100);
+                pack1.player.setDiedAt(moment().subtract(10, 'seconds'));
+
+                const message = FlatBuffersHelper.gameData.playerRespawnReqData(pack1.player.id, x, y, z);
+                pack1.clientTcp.write(prependLength(message));
             })
             .catch(error => done(error));
     });
@@ -49,13 +51,13 @@ describe('Game is in progress and', function () {
     it('cannot spawn before cooldown', function (done) {
         Promise.all([createPlayer(), createPlayer()])
             .then(startGame)
-            .then(([connection1]) => {
-                connection1.player.setDiedAt(moment());
+            .then(([pack1, pack2]) => {
+                lifeManager.takeDamage(pack2.player, pack1.player, 100);
 
-                const message = FlatBuffersHelper.gameData.playerRespawnReqData(connection1.player.id, 1, 1, 1);
-                connection1.clientTcp.write(prependLength(message));
+                const message = FlatBuffersHelper.gameData.playerRespawnReqData(pack1.player.id, 1, 1, 1);
+                pack1.clientTcp.write(prependLength(message));
 
-                connection1.clientTcp.on('data', data => splitData(data, data => {
+                pack1.clientTcp.on('data', data => splitData(data, data => {
                     const message = new Uint8Array(data);
                     const buf = new flatbuffers.ByteBuffer(message);
 

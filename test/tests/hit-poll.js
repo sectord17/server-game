@@ -2,15 +2,16 @@ const {beforeEach, describe, it} = require('mocha');
 const flatbuffers = require('flatbuffers').flatbuffers;
 const GameAssets = require('../../src/flatbuffers/GameSchema_generated').Assets;
 const assert = require('assert');
-const {shootManager, lifeManager} = require('../utils/src');
-const {createLivePlayer, beforeEach: setupBeforeEach} = require('../utils/helpers');
+const {shootManager} = require('../utils/src');
+const {createPlayer, startGame, beforeEach: setupBeforeEach} = require('../utils/helpers');
 const {splitData} = require('../../src/communication/utils');
 
 describe('Hit poll', function () {
     beforeEach(setupBeforeEach);
 
     it('takes damage when 2 out of 3 players vote the same and 1 something else', function (done) {
-        Promise.all([createLivePlayer(), createLivePlayer(), createLivePlayer()])
+        Promise.all([createPlayer(), createPlayer(), createPlayer()])
+            .then(startGame)
             .then(([connection1, connection2, connection3]) => {
                 const attacker = connection1.player;
                 const victim = connection2.player;
@@ -36,7 +37,8 @@ describe('Hit poll', function () {
     });
 
     it('takes damage when 2 out of 3 players vote the same', function (done) {
-        Promise.all([createLivePlayer(), createLivePlayer(), createLivePlayer()])
+        Promise.all([createPlayer(), createPlayer(), createPlayer()])
+            .then(startGame)
             .then(([connection1, connection2]) => {
                 const attacker = connection1.player;
                 const victim = connection2.player;
@@ -61,7 +63,8 @@ describe('Hit poll', function () {
     });
 
     it('kills victim when take 100hp or more', function (done) {
-        Promise.all([createLivePlayer(), createLivePlayer()])
+        Promise.all([createPlayer(), createPlayer()])
+            .then(startGame)
             .then(([connection1, connection2]) => {
                 const attacker = connection1.player;
                 const victim = connection2.player;
@@ -86,7 +89,8 @@ describe('Hit poll', function () {
     });
 
     it('does not take damage when less than 50% of players vote the same', function (done) {
-        Promise.all([createLivePlayer(), createLivePlayer(), createLivePlayer()])
+        Promise.all([createPlayer(), createPlayer(), createPlayer()])
+            .then(startGame)
             .then(([connection1, connection2, connection3]) => {
                 const attacker = connection1.player;
                 const victim = connection2.player;
@@ -102,7 +106,8 @@ describe('Hit poll', function () {
     });
 
     it('does not take damage when less than 50% of players vote', function (done) {
-        Promise.all([createLivePlayer(), createLivePlayer(), createLivePlayer()])
+        Promise.all([createPlayer(), createPlayer(), createPlayer()])
+            .then(startGame)
             .then(([connection1, connection2]) => {
                 const attacker = connection1.player;
                 const victim = connection2.player;
@@ -118,7 +123,8 @@ describe('Hit poll', function () {
     });
 
     it('allows one player vote only once', function (done) {
-        Promise.all([createLivePlayer(), createLivePlayer(), createLivePlayer()])
+        Promise.all([createPlayer(), createPlayer(), createPlayer()])
+            .then(startGame)
             .then(([connection1, connection2]) => {
                 const attacker = connection1.player;
                 const victim = connection2.player;

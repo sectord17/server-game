@@ -1,6 +1,7 @@
+const assert = require('assert');
 const {beforeEach, describe, it} = require('mocha');
 const {serverUDP} = require('../utils/src');
-const {createPlayer, beforeEach: setupBeforeEach} = require('../utils/helpers');
+const {createPlayer, beforeEach: setupBeforeEach, startGame} = require('../utils/helpers');
 const flatbuffers = require('flatbuffers').flatbuffers;
 const GameAssets = require('../../src/flatbuffers/GameSchema_generated').Assets;
 const FlatBuffersHelper = require('../../src/flatbuffers/helper');
@@ -11,6 +12,7 @@ describe('Player is on server', function () {
 
     it('sends player data', function (done) {
         Promise.all([createPlayer(), createPlayer()])
+            .then(startGame)
             .then(([connections1, connections2]) => {
                 connections1.clientUdp.on('message', message => {
                     const data = new Uint8Array(message);
@@ -21,10 +23,7 @@ describe('Player is on server', function () {
                     }
 
                     const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
-                    if (gameData.dataType() !== GameAssets.Code.Remote.Flat.Data.PlayerData) {
-                        return done("Invalida data type");
-                    }
-
+                    assert.equal(gameData.dataType(), GameAssets.Code.Remote.Flat.Data.PlayerData);
                     done();
                 });
 
@@ -37,6 +36,7 @@ describe('Player is on server', function () {
 
     it('sends shoot data', function (done) {
         Promise.all([createPlayer(), createPlayer()])
+            .then(startGame)
             .then(([connections1, connections2]) => {
                 connections1.clientTcp.on('data', data => splitData(data, message => {
                     const data = new Uint8Array(message);
@@ -45,7 +45,7 @@ describe('Player is on server', function () {
                     if (GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
                         const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
                         if (gameData.dataType() === GameAssets.Code.Remote.Flat.Data.ShootData) {
-                            return done();
+                            done();
                         }
                     }
                 }));

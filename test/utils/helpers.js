@@ -4,6 +4,7 @@ const dgram = require('dgram');
 const flatbuffers = require('flatbuffers').flatbuffers;
 const UdpAssets = require('../../src/flatbuffers/UdpSchema_generated').Assets;
 const RoomAssets = require('../../src/flatbuffers/RoomSchema_generated').Assets;
+const GameAssets = require('../../src/flatbuffers/GameSchema_generated').Assets;
 const FlatBuffersHelper = require('../../src/flatbuffers/helper');
 const {broadcaster, gameManager, lifeManager, lobby, playerManager, shootManager, serverTCP, serverUDP} = require('./src');
 const {prependLength, splitData} = require('../../src/communication/utils');
@@ -86,18 +87,27 @@ module.exports.createPlayer = name => {
     });
 };
 
-module.exports.createLivePlayer = name => module.exports
-    .createPlayer(name)
-    .then(connection => {
-        lifeManager.spawnPlayer(connection.player);
-        return connection;
-    });
+module.exports.startGame = packs => new Promise(resolve => {
+    broadcaster.listen(GameInProgressEvent, () => {
+        packs.forEach(pack => lifeManager.spawnPlayer(pack.player, 50, 20, 20));
 
-module.exports.startGame = players => new Promise(resolve => {
-    broadcaster.listen(GameInProgressEvent, () => resolve(players));
+        let respawnCounter = 0;
+
+        packs[0].clientTcp.on('data', data => splitData(data, data => {
+            const buf = new flatbuffers.ByteBuffer(new Uint8Array(data));
+
+            if (GameAssets.Code.Remote.Flat.GameData.bufferHasIdentifier(buf)) {
+                const gameData = GameAssets.Code.Remote.Flat.GameData.getRootAsGameData(buf);
+                if (gameData.dataType() === GameAssets.Code.Remote.Flat.Data.PlayerRespawnAckData) {
+                    if (++respawnCounter === packs.length) {
+                        resolve(packs);
+                    }
+                }
+            }
+        }));
+    });
 
     const message = FlatBuffersHelper.roomMsg.meReady(true);
     const buffer = prependLength(message);
-
-    players.forEach(player => player.clientTcp.write(buffer));
+    packs.forEach(pack => pack.clientTcp.write(buffer));
 });
