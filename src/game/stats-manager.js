@@ -1,4 +1,3 @@
-const debug = require('debug')('sectord17-game:stats-manager');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 
 class StatsManager {
