@@ -67,6 +67,7 @@ class GameManager {
     gameFinish() {
         this.status = FINISHED;
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.Finish);
+        winston.log('info', "Game has finished!");
         this.shutdown();
     }
 
