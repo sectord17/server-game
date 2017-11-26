@@ -1,4 +1,5 @@
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
+const winston = require('winston');
 
 class StatsManager {
     constructor() {
@@ -32,6 +33,7 @@ class StatsManager {
      */
     _addPoints(player, points) {
         player.setPoints(player.points + points);
+        winston.log('info', `Grant ${points} points to ${player.getInlineDetails()}`);
 
         if (player.points >= this.POINTS_THRESHOLD) {
             this.gameManager.gameFinish();
