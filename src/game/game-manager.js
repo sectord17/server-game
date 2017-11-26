@@ -12,6 +12,7 @@ const FINISHED = 3;
 class GameManager {
     constructor() {
         this.TIME_FOR_GIVING_UP = 5 * 1000;
+        this.SHUTDOWN_DELAY = 5 * 1000;
         this.init();
     }
 
@@ -67,8 +68,9 @@ class GameManager {
     gameFinish() {
         this.status = FINISHED;
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.Finish);
-        winston.log('info', "Game has finished!");
-        this.shutdown();
+        winston.log('info', "Game is finishing...");
+
+        setTimeout(this.shutdown.bind(this), this.SHUTDOWN_DELAY);
     }
 
     isInProgress() {
