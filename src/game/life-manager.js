@@ -1,4 +1,5 @@
 const moment = require('moment');
+const winston = require('winston');
 const debug = require('debug')('sectord17-game:life-manager');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const FlatbufferErrors = require('../errors/flatbuffer-errors');
@@ -56,7 +57,7 @@ class LifeManager {
         const message = FlatBuffersHelper.gameData.playerRespawnAckData(player.id, x, y, z);
         this.sender.toEveryPlayerViaTCP(message);
 
-        debug(`Player ${player.getInlineDetails()} has been respawned`);
+        winston.log(`Player ${player.getInlineDetails()} has been respawned`);
     }
 
     _canRespawn(player) {
@@ -75,7 +76,7 @@ class LifeManager {
 
         this.statsManager.onPlayerDeath(killer, victim);
 
-        debug(`Player ${victim.getInlineDetails()} has died`);
+        winston.log(`Player ${victim.getInlineDetails()} has died`);
     }
 }
 

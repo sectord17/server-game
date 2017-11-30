@@ -1,3 +1,4 @@
+const winston = require('winston');
 const debug = require('debug')('sectord17-game:lobby');
 const FlatBuffersHelper = include('/src/flatbuffers/helper');
 const Player = require('./player');
@@ -49,7 +50,7 @@ class Lobby {
         this._sendRoomInfo(player);
         this._informPlayersPlayerJoined(player);
 
-        debug(`Player ${player.getInlineDetails()} joined the lobby.`);
+        winston.log(`Player ${player.getInlineDetails()} joined the lobby.`);
 
         return true;
     }
@@ -67,7 +68,7 @@ class Lobby {
         this.players.delete(player.id);
         this._informPlayersPlayerQuit(player);
 
-        debug(`Player ${player.getInlineDetails()} quit the lobby.`);
+        winston.log(`Player ${player.getInlineDetails()} quit the lobby.`);
 
         return true;
     }
