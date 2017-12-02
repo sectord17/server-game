@@ -5,6 +5,10 @@ class SlaveSDK {
         });
     }
 
+    gameStatusChanged(status) {
+        this._send('game-status-changed', {status});
+    }
+
     booted() {
         this._send('booted');
     }

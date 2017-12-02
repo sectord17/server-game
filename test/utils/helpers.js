@@ -16,7 +16,7 @@ require('unset-timeout');
 module.exports.beforeEach = function () {
     winston.level = 'warn';
 
-    gameManager.shutdown = function () {
+    gameManager._shutdown = function () {
         //
     };
 

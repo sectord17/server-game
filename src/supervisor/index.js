@@ -26,7 +26,7 @@ class Supervisor {
 
         if (playersCount === 0) {
             debug("No players after starting cooldown");
-            this.gameManager.shutdown();
+            this.gameManager.gameFinish();
         }
     }
 

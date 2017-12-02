@@ -46,6 +46,6 @@ module.exports = exports = app => {
 
     app.post('/shutdown', (request, response) => {
         response.sendStatus(200);
-        gameManager.shutdown();
+        gameManager.gameFinish();
     });
 };

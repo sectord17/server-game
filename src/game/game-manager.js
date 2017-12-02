@@ -12,7 +12,7 @@ const FINISHED = 3;
 class GameManager {
     constructor() {
         this.TIME_FOR_GIVING_UP = 5 * 1000;
-        this.SHUTDOWN_DELAY = 5 * 1000;
+        this.SHUTDOWN_DELAY = 1 * 1000;
         this.init();
     }
 
@@ -43,6 +43,8 @@ class GameManager {
             this._timeoutGameInProgress = null;
         }
 
+        this.slaveSDK.gameStatusChanged(this.status);
+
         winston.log('info', "Game is preparing...");
     }
 
@@ -50,6 +52,8 @@ class GameManager {
         this.status = STARTING;
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.Start);
         this._timeoutGameInProgress = setTimeout(this.gameInProgress.bind(this), this.TIME_FOR_GIVING_UP);
+
+        this.slaveSDK.gameStatusChanged(this.status);
 
         winston.log('info', "Game is starting...");
     }
@@ -60,6 +64,7 @@ class GameManager {
         this._timeoutGameInProgress = null;
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.InProgress);
 
+        this.slaveSDK.gameStatusChanged(this.status);
         this.broadcaster.fire(new GameInProgressEvent());
 
         winston.log('info', "Game has started!");
@@ -68,9 +73,16 @@ class GameManager {
     gameFinish() {
         this.status = FINISHED;
         this._sendGameStatusChanged(RoomAssets.Code.Remote.Flat.GameStatus.Finish);
+        setTimeout(this._shutdown.bind(this), this.SHUTDOWN_DELAY);
+
+        this.slaveSDK.gameStatusChanged(this.status);
+
         winston.log('info', "Game is finishing...");
 
-        setTimeout(this.shutdown.bind(this), this.SHUTDOWN_DELAY);
+    }
+
+    isStarting() {
+        return this.status === STARTING;
     }
 
     isInProgress() {
@@ -82,7 +94,7 @@ class GameManager {
         this.broadcaster.fire(new GameBootedEvent());
     }
 
-    shutdown() {
+    _shutdown() {
         winston.log('info', "Shutting down...");
         process.exit();
     }

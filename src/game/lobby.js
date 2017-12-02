@@ -93,9 +93,10 @@ class Lobby {
             debug(`Player ${player.getInlineDetails()} is unready for game start.`);
         }
 
-        // Player changed ready state, but game could be already in starting state
-        // That is why we should make sure it is now in preparing state
-        this.gameManager.gamePreparing();
+        if (this.gameManager.isStarting()) {
+            this.gameManager.gamePreparing();
+        }
+
         this._tryStartGame();
 
         return true;

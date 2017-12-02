@@ -64,6 +64,10 @@ class PlayerManager {
             throw new ConnectingError("too_many_players");
         }
 
+        if (this.gameManager.isStarting() || this.gameManager.isInProgress()) {
+            throw new ConnectingError("game_in_progress");
+        }
+
         const token = uuidV4();
 
         const player = new Player(token);
@@ -107,24 +111,11 @@ class PlayerManager {
      * @returns {Promise.<Player>}
      */
     connect(token, address, udpPort) {
-        return this._register(token, address, udpPort)
-            .then(player => {
-                const message = FlatBuffersHelper.udpReceived(player.id);
-                this.sender.toPlayerViaTCP(player, message);
-                this.lobby.addPlayer(player);
-
-                return player;
-            });
-    }
-
-    /**
-     * @param {string} token
-     * @param {string} address
-     * @param {int} udpPort
-     * @returns {Promise.<Player>}
-     */
-    _register(token, address, udpPort) {
         return new Promise((resolve, reject) => {
+            if (this.gameManager.isInProgress()) {
+                return reject(new ConnectingError("game_in_progress"));
+            }
+
             const player = this.players.get(token);
             if (!player) {
                 return reject(new ConnectingError("invalid_token"));
@@ -146,9 +137,17 @@ class PlayerManager {
             player.communicationHandler.assignAddress(address, udpPort);
             player.setConnected(id);
             this.teamManager.assignToTeam(player);
-
             this.connectedPlayers.set(player.id, player);
             this._onPlayersCountChanged();
+
+            const message = FlatBuffersHelper.udpReceived(player.id);
+            this.sender.toPlayerViaTCP(player, message);
+
+            this.lobby.addPlayer(player);
+
+            if (this.gameManager.isStarting()) {
+                this.gameManager.gamePreparing();
+            }
 
             winston.log('info', `Player ${player.getInlineDetails()} connected`);
 
@@ -241,7 +240,7 @@ class PlayerManager {
 
     _shutdownIfNoPlayers() {
         if (this.connectedPlayers.size === 0) {
-            this.gameManager.shutdown();
+            this.gameManager.gameFinish();
         }
     }
 
