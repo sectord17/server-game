@@ -61,7 +61,7 @@ class MessageHandler {
         const senderId = gameData.senderId();
 
         if (senderId !== this.player.id) {
-            debug("Invalid player id, drop message");
+            debug(`Invalid player id, drop message. Expected: [${this.player.id}], given: [${senderId}]`);
             return;
         }
 
