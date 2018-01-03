@@ -1,5 +1,3 @@
-const winston = require('winston');
-
 const DATETIME_FORMAT = "YYYY-MM-DD HH:mm:ss:SSS";
 
 module.exports.getValidEnv = key => {
