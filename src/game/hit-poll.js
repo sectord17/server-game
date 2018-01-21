@@ -1,6 +1,6 @@
 const debug = require('debug')('sectord17-game:hit-poll');
 
-const MIN_RATIO = 0.4;
+const MIN_RATIO = 0.5;
 
 class HitPoll {
     /**
@@ -50,7 +50,7 @@ class HitPoll {
         let occurences = {};
 
         const playersCount = this.playerManager.getConnectedPlayers().length;
-        const minVotesCount = Math.floor(playersCount * MIN_RATIO);
+        const minVotesCount = Math.ceil(playersCount * MIN_RATIO) - 1;
 
         if (this.votes.length < minVotesCount) {
             debug(`Vote for #${this.hitId} hit failed [${this.votes.length}/${minVotesCount}]`);

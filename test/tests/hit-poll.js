@@ -89,7 +89,7 @@ describe('Hit poll', function () {
     });
 
     it('does not take damage when less than 50% of players vote the same', function (done) {
-        Promise.all([createPlayer(), createPlayer(), createPlayer()])
+        Promise.all([createPlayer(), createPlayer(), createPlayer(), createPlayer(), createPlayer()])
             .then(startGame)
             .then(([connection1, connection2, connection3]) => {
                 const attacker = connection1.player;
@@ -106,7 +106,7 @@ describe('Hit poll', function () {
     });
 
     it('does not take damage when less than 50% of players vote', function (done) {
-        Promise.all([createPlayer(), createPlayer(), createPlayer()])
+        Promise.all([createPlayer(), createPlayer(), createPlayer(), createPlayer(), createPlayer()])
             .then(startGame)
             .then(([connection1, connection2]) => {
                 const attacker = connection1.player;
@@ -123,7 +123,7 @@ describe('Hit poll', function () {
     });
 
     it('allows one player vote only once', function (done) {
-        Promise.all([createPlayer(), createPlayer(), createPlayer()])
+        Promise.all([createPlayer(), createPlayer(), createPlayer(), createPlayer(), createPlayer()])
             .then(startGame)
             .then(([connection1, connection2]) => {
                 const attacker = connection1.player;
