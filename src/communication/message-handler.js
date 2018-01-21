@@ -124,7 +124,7 @@ class MessageHandler {
 
     _onPlayerData(message) {
         if (!this.player.isAlive()) {
-            debug(`PlayerData when player is not alive. From player: ${this.player.getInlineDetails()}`);
+            // debug(`PlayerData when player is not alive. From player: ${this.player.getInlineDetails()}`);
             return;
         }
 
@@ -136,7 +136,7 @@ class MessageHandler {
      */
     _onPlayerRespawnReqData(data) {
         if (this.player.isAlive()) {
-            debug(`PlayerRespawnReqData when player is alive. From player: ${this.player.getInlineDetails()}`);
+            // debug(`PlayerRespawnReqData when player is alive. From player: ${this.player.getInlineDetails()}`);
             return;
         }
 
