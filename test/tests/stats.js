@@ -39,10 +39,17 @@ describe('Statistics on server', function () {
             .catch(error => done(error));
     });
 
-    it('game ends when player gains 30 points', function (done) {
+    it('game ends when player gains 100 points', function (done) {
         Promise.all([createPlayer(), createPlayer()])
             .then(startGame)
             .then(([connections1, connections2]) => {
+                statsManager.onPlayerDeath(connections1.player, connections2.player);
+                statsManager.onPlayerDeath(connections1.player, connections2.player);
+                statsManager.onPlayerDeath(connections1.player, connections2.player);
+                statsManager.onPlayerDeath(connections1.player, connections2.player);
+                statsManager.onPlayerDeath(connections1.player, connections2.player);
+                statsManager.onPlayerDeath(connections1.player, connections2.player);
+                statsManager.onPlayerDeath(connections1.player, connections2.player);
                 statsManager.onPlayerDeath(connections1.player, connections2.player);
                 statsManager.onPlayerDeath(connections1.player, connections2.player);
                 statsManager.onPlayerDeath(connections2.player, connections1.player);
