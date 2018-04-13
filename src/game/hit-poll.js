@@ -1,6 +1,6 @@
 const debug = require('debug')('sectord17-game:hit-poll');
 
-const MIN_RATIO = 0.5;
+const MIN_RATIO = 0.4;
 
 class HitPoll {
     /**
