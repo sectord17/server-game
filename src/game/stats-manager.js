@@ -4,7 +4,7 @@ const winston = require('winston');
 class StatsManager {
     constructor() {
         this.KILL_POINTS = 10;
-        this.POINTS_THRESHOLD = 100;
+        this.POINTS_THRESHOLD = 300;
     }
 
     use(dependencies) {
